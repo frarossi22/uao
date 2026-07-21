@@ -1,4 +1,4 @@
-name: Test Playwright su Google
+name: Test Playwright con output forzato
 
 on:
   workflow_dispatch:
@@ -22,21 +22,37 @@ jobs:
         playwright install chromium
         playwright install-deps
     
-    - name: Test su Google
+    - name: Test con output immediato
       run: |
-        python -c "
+        python -u -c "
+        import sys
         from playwright.sync_api import sync_playwright
         
-        print('🔍 Test su google.com...')
+        sys.stdout.write('🔍 Avvio test...\n')
+        sys.stdout.flush()
+        
         try:
+            sys.stdout.write('📦 Avvio Playwright...\n')
+            sys.stdout.flush()
             with sync_playwright() as p:
+                sys.stdout.write('🌐 Avvio browser...\n')
+                sys.stdout.flush()
                 browser = p.chromium.launch(headless=True)
+                sys.stdout.write('✅ Browser avviato!\n')
+                sys.stdout.flush()
+                
                 page = browser.new_page()
+                sys.stdout.write('⏳ Caricamento google.com...\n')
+                sys.stdout.flush()
+                
                 page.goto('https://google.com', timeout=30000)
-                print('✅ Google caricata!')
-                print(f'📄 Titolo: {page.title()}')
+                sys.stdout.write(f'✅ Pagina caricata! Titolo: {page.title()}\n')
+                sys.stdout.flush()
+                
                 browser.close()
-                print('✅ Test completato!')
+                sys.stdout.write('✅ Test completato con successo!\n')
+                sys.stdout.flush()
         except Exception as e:
-            print(f'❌ ERRORE: {e}')
+            sys.stdout.write(f'❌ ERRORE: {e}\n')
+            sys.stdout.flush()
         "
