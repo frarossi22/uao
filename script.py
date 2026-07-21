@@ -5,6 +5,9 @@ import os
 import base64
 import re
 from datetime import datetime
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+from google.oauth2.credentials import Credentials
 
 CHANNELS = [
     {"name": "Sky Cinema Uno", "url": "https://uaznao.com/premium/canalitv/cinema1.php"},
@@ -123,6 +126,38 @@ def estrai_mpd(page, url):
 
     return mpd_url, ck_base64
 
+def carica_su_drive(file_path, nome_file, folder_id=None):
+    """Carica un file su Google Drive usando le credenziali OAuth2"""
+    try:
+        creds = Credentials(
+            token=None,
+            refresh_token=os.environ.get('GDRIVE_REFRESH_TOKEN'),
+            client_id=os.environ.get('GDRIVE_CLIENT_ID'),
+            client_secret=os.environ.get('GDRIVE_CLIENT_SECRET'),
+            token_uri='https://oauth2.googleapis.com/token'
+        )
+        
+        service = build('drive', 'v3', credentials=creds)
+        
+        file_metadata = {'name': nome_file}
+        if folder_id:
+            file_metadata['parents'] = [folder_id]
+        
+        media = MediaFileUpload(file_path, resumable=True)
+        file = service.files().create(
+            body=file_metadata,
+            media_body=media,
+            fields='id, webViewLink'
+        ).execute()
+        
+        log(f"✅ File caricato su Drive: {nome_file} (ID: {file.get('id')})")
+        log(f"🔗 Link: https://drive.google.com/file/d/{file.get('id')}/view")
+        return file.get('id')
+    
+    except Exception as e:
+        log(f"❌ Errore caricamento su Drive: {e}")
+        return None
+
 def main():
     log("=" * 60)
     log("🎯 ESTRATTORE MPD CON PLAYWRIGHT")
@@ -175,6 +210,7 @@ def main():
         log("\n❌ Nessun MPD estratto!")
         return
 
+    # Salva riepilogo txt
     txt_file = f"estrazione_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
     with open(txt_file, "w", encoding="utf-8") as f:
         f.write("RIEPILOGO MPD\n" + "=" * 50 + "\n\n")
@@ -186,6 +222,7 @@ def main():
             f.write("-" * 30 + "\n")
     log(f"\n📄 Riepilogo salvato in {txt_file}")
 
+    # Genera playlist M3U
     header = '#EXTM3U url-tvg="https://github.com/qwertyuiop8899/TV/raw/refs/heads/main/epg.xml.gz"\n'
     lines = [header]
     for r in risultati:
@@ -208,6 +245,13 @@ def main():
 
     log(f"\n✅ playlist.m3u generata ({len(risultati)} canali)")
     log(f"📁 File salvati localmente: {playlist_file}")
+    
+    # 🔥 CARICA SU GOOGLE DRIVE
+    log("📤 Caricamento playlist.m3u su Google Drive...")
+    drive_file_id = carica_su_drive(playlist_file, "playlist.m3u")
+    if drive_file_id:
+        log(f"✅ Playlist caricata con successo!")
+    
     log(f"📝 Log dettagliato: {LOG_FILE}")
 
 if __name__ == "__main__":
