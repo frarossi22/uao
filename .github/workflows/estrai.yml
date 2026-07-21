@@ -1,4 +1,4 @@
-name: Test Playwright dettagliato
+name: Test Playwright con file
 
 on:
   workflow_dispatch:
@@ -16,34 +16,32 @@ jobs:
       with:
         python-version: '3.10'
     
-    - name: Installa Playwright con verbose
+    - name: Installa Playwright
       run: |
-        echo "📦 Installazione Playwright..."
-        pip install playwright --verbose
-        echo "✅ Playwright installato!"
-        echo "📦 Installazione Chromium..."
-        playwright install chromium --verbose
-        echo "✅ Chromium installato!"
-        echo "📦 Installazione dipendenze..."
+        pip install playwright
+        playwright install chromium
         playwright install-deps
-        echo "✅ Tutto installato!"
     
-    - name: Test Playwright
+    - name: Crea script di test
       run: |
-        python -c "
+        cat > test_playwright.py << 'EOF'
         from playwright.sync_api import sync_playwright
-        print('🔍 Avvio Playwright...')
+        
+        print("Script avviato!")
+        
         try:
             with sync_playwright() as p:
-                print('✅ Playwright avviato!')
+                print("Playwright avviato!")
                 browser = p.chromium.launch(headless=True)
-                print('✅ Browser avviato!')
+                print("Browser avviato!")
                 page = browser.new_page()
-                print('✅ Nuova pagina creata!')
-                page.goto('https://google.com', timeout=10000)
-                print(f'✅ Pagina caricata! Titolo: {page.title()}')
+                page.goto('https://google.com')
+                print(f"Titolo: {page.title()}")
                 browser.close()
-                print('✅ Test completato!')
+                print("Test completato!")
         except Exception as e:
-            print(f'❌ ERRORE: {e}')
-        "
+            print(f"ERRORE: {e}")
+        EOF
+    
+    - name: Esegui script
+      run: python test_playwright.py
