@@ -127,7 +127,7 @@ def estrai_mpd(page, url):
     return mpd_url, ck_base64
 
 def carica_su_drive(file_path, nome_file, folder_id=None):
-    """Carica un file su Google Drive usando le credenziali OAuth2"""
+    """Carica o aggiorna un file su Google Drive (sovrascrive se esiste)"""
     try:
         creds = Credentials(
             token=None,
@@ -139,20 +139,40 @@ def carica_su_drive(file_path, nome_file, folder_id=None):
         
         service = build('drive', 'v3', credentials=creds)
         
-        file_metadata = {'name': nome_file}
+        # Cerca se il file esiste già
+        query = f"name='{nome_file}' and trashed=false"
         if folder_id:
-            file_metadata['parents'] = [folder_id]
+            query += f" and '{folder_id}' in parents"
+        
+        results = service.files().list(q=query, fields="files(id, name)").execute()
+        files = results.get('files', [])
         
         media = MediaFileUpload(file_path, resumable=True)
-        file = service.files().create(
-            body=file_metadata,
-            media_body=media,
-            fields='id, webViewLink'
-        ).execute()
         
-        log(f"✅ File caricato su Drive: {nome_file} (ID: {file.get('id')})")
-        log(f"🔗 Link: https://drive.google.com/file/d/{file.get('id')}/view")
-        return file.get('id')
+        if files:
+            # Se esiste, lo aggiorna (sovrascrive)
+            file_id = files[0]['id']
+            service.files().update(
+                fileId=file_id,
+                media_body=media
+            ).execute()
+            log(f"✅ File aggiornato su Drive: {nome_file} (ID: {file_id})")
+            log(f"🔗 Link: https://drive.google.com/file/d/{file_id}/view")
+            return file_id
+        else:
+            # Se non esiste, lo carica come nuovo
+            file_metadata = {'name': nome_file}
+            if folder_id:
+                file_metadata['parents'] = [folder_id]
+            
+            new_file = service.files().create(
+                body=file_metadata,
+                media_body=media,
+                fields='id, webViewLink'
+            ).execute()
+            log(f"✅ File caricato su Drive: {nome_file} (ID: {new_file.get('id')})")
+            log(f"🔗 Link: https://drive.google.com/file/d/{new_file.get('id')}/view")
+            return new_file.get('id')
     
     except Exception as e:
         log(f"❌ Errore caricamento su Drive: {e}")
@@ -246,11 +266,11 @@ def main():
     log(f"\n✅ playlist.m3u generata ({len(risultati)} canali)")
     log(f"📁 File salvati localmente: {playlist_file}")
     
-    # 🔥 CARICA SU GOOGLE DRIVE
+    # 🔥 CARICA SU GOOGLE DRIVE (SOVRASCRIVE SE ESISTE)
     log("📤 Caricamento playlist.m3u su Google Drive...")
     drive_file_id = carica_su_drive(playlist_file, "playlist.m3u")
     if drive_file_id:
-        log(f"✅ Playlist caricata con successo!")
+        log(f"✅ Playlist caricata/aggiornata con successo!")
     
     log(f"📝 Log dettagliato: {LOG_FILE}")
 
