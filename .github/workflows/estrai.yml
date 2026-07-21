@@ -24,8 +24,9 @@ jobs:
       - name: Esegui script
         run: python script.py
 
-      - name: Upload playlist
-        uses: actions/upload-artifact@v4
+      - name: Upload playlist su Google Drive
+        uses: adityak74/upload-google-drive-action@v1
         with:
-          name: playlist-m3u
-          path: playlist.m3u
+          credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
+          file: playlist.m3u
+          folderId: ${{ secrets.GDRIVE_FOLDER_ID }}
