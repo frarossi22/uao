@@ -21,7 +21,9 @@ jobs:
     - name: Installa dipendenze
       run: |
         pip install --upgrade pip
-        pip install google-auth google-auth-oauthlib google-api-python-client pandas
+        pip install google-auth google-auth-oauthlib google-api-python-client pandas playwright
+        playwright install chromium
+        playwright install-deps
     
     - name: Crea file di credenziali
       run: |
@@ -51,4 +53,6 @@ jobs:
         path: |
           *.csv
           *.xlsx
+          *.txt
+          *.m3u
         retention-days: 7
