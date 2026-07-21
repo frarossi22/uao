@@ -1,4 +1,4 @@
-name: Test rapido Playwright
+name: Test Playwright con timeout
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout del codice
+    - name: Checkout
       uses: actions/checkout@v4
     
     - name: Setup Python
@@ -22,20 +22,21 @@ jobs:
         playwright install chromium
         playwright install-deps
     
-    - name: Test su un canale
+    - name: Test con timeout 60s
       run: |
         python -c "
         from playwright.sync_api import sync_playwright
         import time
         
         url = 'https://uaznao.com/premium/canalitv/cinema1.php'
-        print(f'🔍 Test su: {url}')
+        print('🔍 Avvio test...')
         
         try:
             with sync_playwright() as p:
                 browser = p.chromium.launch(headless=True)
                 page = browser.new_page()
-                page.goto(url, timeout=30000, wait_until='domcontentloaded')
+                print('⏳ Caricamento pagina (timeout 60s)...')
+                page.goto(url, timeout=60000, wait_until='domcontentloaded')
                 print('✅ Pagina caricata!')
                 content = page.content()
                 print(f'📄 Contenuto: {len(content)} caratteri')
