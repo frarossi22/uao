@@ -2,7 +2,7 @@ name: Esecuzione script estrai
 
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '30 1 * * *'  # 1:30 UTC = 3:30 italiane
   workflow_dispatch:
 
 jobs:
