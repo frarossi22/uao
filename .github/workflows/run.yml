@@ -25,4 +25,4 @@ jobs:
           # pip install requests pandas beautifulsoup4
 
       - name: Esegui lo script Python
-        run: python scraper 46 canali skympd.m3u auto google drive solo android-android.py  # Sostituisci "script.py" con il nome esatto del tuo file .py
+        run: python scraper_46_canali_skympd.m3u_auto_google_drive_solo_android_android.py  # Sostituisci "script.py" con il nome esatto del tuo file .py
