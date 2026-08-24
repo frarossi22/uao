@@ -4,7 +4,7 @@ on:
   schedule:
     # Esegue lo script ogni giorno alle 09:00 ora italiana (07:00 UTC)
     - cron: '0 7 * * *'
-  workflow_dispatch: # Permette di avviarlo anche a mano quando vuoi
+  workflow_dispatch: # Permette l'avvio manuale con un click
 
 jobs:
   run-python:
@@ -21,8 +21,7 @@ jobs:
       - name: Installa le dipendenze
         run: |
           python -m pip install --upgrade pip
-          # Se il tuo script usa librerie esterne, togli il # dalla riga sotto e aggiungile:
-          # pip install requests pandas beautifulsoup4
+          pip install requests
 
       - name: Esegui lo script Python
-        run: python scraper_46_canali_skympd.m3u_auto_google_drive_solo_android_android.py  # Sostituisci "script.py" con il nome esatto del tuo file .py
+        run: python "scraper_46_canali_skympd.m3u_auto_google_drive_solo_android_android.py"
