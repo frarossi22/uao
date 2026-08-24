@@ -1,0 +1,28 @@
+name: Avvio Automatico Script
+
+on:
+  schedule:
+    # Esegue lo script ogni giorno alle 09:00 ora italiana (07:00 UTC)
+    - cron: '0 7 * * *'
+  workflow_dispatch: # Permette l'avvio manuale in qualsiasi momento con un click
+
+jobs:
+  run-python:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scarica il codice dal repository
+        uses: actions/checkout@v4
+
+      - name: Configura l'ambiente Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Installa le dipendenze
+        run: |
+          python -m pip install --upgrade pip
+          # Se il tuo script usa librerie esterne, rimuovi il simbolo # dalla riga sotto e aggiungile:
+          # pip install requests pandas beautifulsoup4
+
+      - name: Esegui lo script Python
+        run: python script.py  # Sostituisci "script.py" con il nome esatto del tuo file
