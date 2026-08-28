@@ -2,6 +2,8 @@ import base64
 import re
 import requests
 import time
+from selenium import webdriver
+from selenium.webdriver.edge.options import Options
 
 # Credenziali Google Drive
 CLIENT_ID = "360991432021-p5qnc2i8jg8vcnv12o33n74cnjl4bk5q.apps.googleusercontent.com"
@@ -16,6 +18,9 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
+# ============================================================
+# CANALI SKY
+# ============================================================
 CHANNEL_MAP = {
     # SKY CINEMA
     "cinemaaction": {"name": "Sky Cinema Action", "group": "CINEMA"},
@@ -49,17 +54,6 @@ CHANNEL_MAP = {
     "motogp": {"name": "Sky Sport MotoGP", "group": "SPORT"},
     "tennis": {"name": "Sky Sport Tennis", "group": "SPORT"},
     "sportuno": {"name": "Sky Sport Uno", "group": "SPORT"},
-    # DAZN
-    "daznch/player_event.php?event=1": {"name": "DAZN 1", "group": "DAZN"},
-    "daznch/player_event.php?event=2": {"name": "DAZN 2", "group": "DAZN"},
-    "daznch/player_event.php?event=3": {"name": "DAZN 3", "group": "DAZN"},
-    "daznch/player_event.php?event=4": {"name": "DAZN 4", "group": "DAZN"},
-    "daznch/player_event.php?event=5": {"name": "DAZN 5", "group": "DAZN"},
-    "daznch/player_event.php?event=6": {"name": "DAZN 6", "group": "DAZN"},
-    "daznch/player_event.php?event=7": {"name": "DAZN 7", "group": "DAZN"},
-    "daznch/player_event.php?event=8": {"name": "DAZN 8", "group": "DAZN"},
-    "daznch/player_event.php?event=9": {"name": "DAZN 9", "group": "DAZN"},
-    "daznch/player_event.php?event=10": {"name": "DAZN 10", "group": "DAZN"},
     # INTRATTENIMENTO
     "boomerang": {"name": "Boomerang", "group": "INTRATTENIMENTO"},
     "cartoonnetwork": {"name": "Cartoon Network", "group": "INTRATTENIMENTO"},
@@ -78,6 +72,82 @@ CHANNEL_MAP = {
     "unoplus": {"name": "Sky Uno Plus", "group": "INTRATTENIMENTO"},
     "investigation": {"name": "Sky Investigation", "group": "INTRATTENIMENTO"},
 }
+
+# ============================================================
+# DAZN 1-10 - ESTRAZIONE VOCI CON SELENIUM
+# ============================================================
+
+def get_dazn_channels():
+    """Prende STREAM_URL e STREAM_CLEAR_KEYS per DAZN 1-10 via Selenium"""
+    channels = []
+    player_url = "https://uaznao.com/premium/canalitv/daznch/player_event.php?event="
+    
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option("useAutomationExtension", False)
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0")
+    
+    driver = None
+    
+    for i in range(1, 11):
+        try:
+            print(f"📺 DAZN {i}...", end=" ")
+            
+            driver = webdriver.Edge(options=options)
+            driver.set_page_load_timeout(30)
+            driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+            
+            driver.get(f"{player_url}{i}")
+            time.sleep(5)
+            
+            html = driver.page_source
+            
+            mpd_match = re.search(r'STREAM_URL\s*=\s*["\']([^"\']+)["\']', html, re.IGNORECASE)
+            if not mpd_match:
+                print("❌ STREAM_URL non trovato")
+                driver.quit()
+                continue
+            
+            keys_match = re.search(r'STREAM_CLEAR_KEYS\s*=\s*["\']([^"\']+)["\']', html, re.IGNORECASE)
+            if not keys_match:
+                print("❌ STREAM_CLEAR_KEYS non trovato")
+                driver.quit()
+                continue
+            
+            mpd_url = mpd_match.group(1)
+            clear_keys = keys_match.group(1)
+            
+            if ':' not in clear_keys:
+                print("❌ Formato KEY non valido")
+                driver.quit()
+                continue
+            
+            kid, key = clear_keys.split(':')
+            
+            print("✅ OK")
+            
+            channels.append({
+                "name": f"DAZN {i}",
+                "kid": kid.lower(),
+                "key": key.lower(),
+                "mpd": mpd_url
+            })
+            
+            driver.quit()
+            
+        except Exception as e:
+            print(f"❌ ERRORE: {e}")
+            if driver:
+                driver.quit()
+            continue
+        
+        time.sleep(1)
+    
+    return channels
 
 
 def refresh_access_token():
@@ -109,26 +179,7 @@ def decode_ck(ck):
         return None
 
 
-def decode_z32(mpd_url):
-    try:
-        match = re.search(r"z32=([^&]+)", mpd_url)
-        if match:
-            encoded_str = match.group(1)
-            padding = len(encoded_str) % 4
-            if padding:
-                encoded_str += "=" * (4 - padding)
-            decoded_bytes = base64.b64decode(encoded_str)
-            decoded_hex = decoded_bytes.hex()
-            if len(decoded_hex) >= 64:
-                kid = decoded_hex[:32]
-                key = decoded_hex[32:64]
-                return f"{kid}:{key}"
-    except Exception:
-        pass
-    return None
-
-
-def generate_m3u(channels):
+def generate_m3u(sky_channels, dazn_channels):
     content = (
         "#EXTM3U"
         ' url-tvg="https://github.com/qwertyuiop8899/TV/raw/refs/heads/main/epg.xml.gz"\n'
@@ -140,96 +191,78 @@ def generate_m3u(channels):
         "DAZN": "DAZN",
     }
     
-    for ch in channels:
+    # SKY
+    for ch in sky_channels:
         grp = group_map.get(ch["group"], ch["group"])
         content += f'#EXTINF:-1 group-title="{grp}" tvg-id="{ch["name"]}",{ch["name"]}\n'
-
-        if ch["group"] == "DAZN":
-            content += "#KODIPROP:inputstream.adaptive.license_type=playready\n"
-            if ch["license_key"]:
-                content += f'#KODIPROP:inputstream.adaptive.license_key={ch["license_key"]}\n'
-        else:
-            if ch["clear_key"]:
-                content += "#KODIPROP:inputstream.adaptive.license_type=clearkey\n"
-                content += f'#KODIPROP:inputstream.adaptive.license_key={ch["clear_key"]}\n'
-
+        if ch["clear_key"]:
+            content += "#KODIPROP:inputstream.adaptive.license_type=clearkey\n"
+            content += f'#KODIPROP:inputstream.adaptive.license_key={ch["clear_key"]}\n'
         content += f'{ch["url"]}\n'
+    
+    # DAZN
+    for ch in dazn_channels:
+        content += f'#EXTINF:-1 group-title="DAZN" tvg-id="{ch["name"]}",{ch["name"]}\n'
+        content += "#KODIPROP:inputstream.adaptive.license_type=clearkey\n"
+        content += f'#KODIPROP:inputstream.adaptive.license_key={ch["kid"]}:{ch["key"]}\n'
+        content += f'{ch["mpd"]}\n'
+    
     return content
 
 
 def main():
-    channels = []
+    print("🔄 Avvio operazione...\n")
+    
+    # 1. Scraping SKY
+    sky_channels = []
+    print("📡 Scraping canali SKY...\n")
     total = len(CHANNEL_MAP)
-    print("🔄 Avvio operazione scraping...\n")
-
+    
     for i, (path, meta) in enumerate(CHANNEL_MAP.items(), 1):
         try:
-            if path.startswith("daznch/"):
-                page_url = f"{BASE_URL}{path}"
-            else:
-                page_url = f"{BASE_URL}{path}.php"
-
+            page_url = f"{BASE_URL}{path}.php"
             print(f"[{i}/{total}] 📡 {meta['name']}")
             
             res = requests.get(page_url, headers=HEADERS, timeout=10)
             
             if res.status_code == 200:
-                if meta["group"] == "DAZN":
-                    # Cerca direttamente il link .mpd
-                    mpd_match = re.search(
-                        r'https?://[^\s"\'<>]+?\.mpd[^\s"\'<>]*', res.text
-                    )
-                    if mpd_match:
-                        mpd_url = mpd_match.group(0)
-                        license_key = decode_z32(mpd_url)
-                        channels.append({
-                            "name": meta["name"],
-                            "group": meta["group"],
-                            "url": mpd_url,
-                            "clear_key": None,
-                            "license_key": license_key,
-                        })
-                        if license_key:
-                            print(f"  ✅ OK (DAZN) -> kid:key estratto")
-                        else:
-                            print(f"  ✅ OK (DAZN) -> senza kid:key (offline?)")
-                    else:
-                        print(f"  ⚠️ Nessun MPD DAZN -> {meta['name']}")
+                match = re.search(r'const\s+STREAM_URL\s*=\s*"([^"]+)"', res.text)
+                if match:
+                    raw_stream = match.group(1).replace(r"\/", "/")
+                    clean_url = raw_stream.split("?")[0]
+                    ck_match = re.search(r"ck=([^&]+)", raw_stream)
+                    clear_key = decode_ck(ck_match.group(1)) if ck_match else None
+                    sky_channels.append({
+                        "name": meta["name"],
+                        "group": meta["group"],
+                        "url": clean_url,
+                        "clear_key": clear_key,
+                    })
+                    print(f"  ✅ OK")
                 else:
-                    # SKY - cerca STREAM_URL
-                    match = re.search(r'const\s+STREAM_URL\s*=\s*"([^"]+)"', res.text)
-                    if match:
-                        raw_stream = match.group(1).replace(r"\/", "/")
-                        clean_url = raw_stream.split("?")[0]
-                        ck_match = re.search(r"ck=([^&]+)", raw_stream)
-                        clear_key = decode_ck(ck_match.group(1)) if ck_match else None
-                        channels.append({
-                            "name": meta["name"],
-                            "group": meta["group"],
-                            "url": clean_url,
-                            "clear_key": clear_key,
-                            "license_key": None,
-                        })
-                        print(f"  ✅ OK")
-                    else:
-                        print(f"  ⚠️ Nessun flusso -> {meta['name']}")
+                    print(f"  ⚠️ Nessun flusso")
             else:
                 print(f"  ❌ Errore HTTP {res.status_code}")
                 
         except Exception as e:
-            print(f"  ❌ Errore rete: {e}")
+            print(f"  ❌ Errore: {e}")
         
         time.sleep(0.3)
-
-    if not channels:
-        print("\n❌ Nessun canale estratto.")
+    
+    # 2. DAZN con Selenium
+    print("\n📡 Estrazione DAZN 1-10 con Selenium...\n")
+    dazn_channels = get_dazn_channels()
+    
+    if not sky_channels and not dazn_channels:
+        print("\n❌ Nessun canale trovato!")
         return
-
-    print(f"\n✅ Trovati {len(channels)} canali.")
+    
+    print(f"\n✅ SKY: {len(sky_channels)} canali")
+    print(f"✅ DAZN: {len(dazn_channels)} canali")
     print("☁️ Connessione a Google Drive in corso...\n")
-
-    m3u_content = generate_m3u(channels)
-
+    
+    m3u_content = generate_m3u(sky_channels, dazn_channels)
+    
     if refresh_access_token():
         try:
             url = f"https://www.googleapis.com/upload/drive/v3/files/{DRIVE_FILE_ID}?uploadType=media"
