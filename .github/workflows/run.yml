@@ -2,8 +2,8 @@ name: DAZN & Sky Scraper
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # Ogni giorno alle 8:00
-  workflow_dispatch:      # Permette esecuzione manuale
+    - cron: '0 8 * * *'
+  workflow_dispatch:
 
 jobs:
   scrape:
@@ -46,5 +46,6 @@ jobs:
         CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
         CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
         REFRESH_TOKEN: ${{ secrets.GDRIVE_REFRESH_TOKEN }}
+        DRIVE_FILE_ID: ${{ secrets.GDRIVE_FILE_ID }}
       run: |
-        xvfb-run -a python scraper_46_canali.py
+        xvfb-run -a python 46canali_e_10dazn_selenum.py
