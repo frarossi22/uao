@@ -2,14 +2,16 @@ import base64
 import re
 import requests
 import time
+import os
 from selenium import webdriver
 from selenium.webdriver.edge.options import Options
+from selenium.webdriver.edge.service import Service
 
-# Credenziali Google Drive
-CLIENT_ID = "360991432021-p5qnc2i8jg8vcnv12o33n74cnjl4bk5q.apps.googleusercontent.com"
-CLIENT_SECRET = "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"
-DRIVE_FILE_ID = "1w6LgRLFOmEYD88fXYlwwhzbBFZ210JG_"
-REFRESH_TOKEN = "1//04SFIkmoK5XT4CgYIARAAGAQSNwF-L9IrfgX8z4LgUKT_jsT1BSaCVZ2DO8k2AqpaLcYMZ_MqQvg5SRj6cSmWE0uG3AtU1Egv1kA"
+# Credenziali Google Drive (ora da variabili d'ambiente per GitHub Actions)
+CLIENT_ID = os.environ.get("CLIENT_ID", "360991432021-p5qnc2i8jg8vcnv12o33n74cnjl4bk5q.apps.googleusercontent.com")
+CLIENT_SECRET = os.environ.get("CLIENT_SECRET", "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")
+DRIVE_FILE_ID = os.environ.get("DRIVE_FILE_ID", "1w6LgRLFOmEYD88fXYlwwhzbBFZ210JG_")
+REFRESH_TOKEN = os.environ.get("REFRESH_TOKEN", "1//04SFIkmoK5XT4CgYIARAAGAQSNwF-L9IrfgX8z4LgUKT_jsT1BSaCVZ2DO8k2AqpaLcYMZ_MqQvg5SRj6cSmWE0uG3AtU1Egv1kA")
 
 ACCESS_TOKEN = ""
 BASE_URL = "https://uaznao.com/premium/canalitv/"
@@ -86,6 +88,7 @@ def get_dazn_channels():
     options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationExtension", False)
@@ -97,7 +100,26 @@ def get_dazn_channels():
         try:
             print(f"📺 DAZN {i}...", end=" ")
             
-            driver = webdriver.Edge(options=options)
+            # Prova diversi percorsi per il driver
+            driver_paths = [
+                "/usr/local/bin/msedgedriver",
+                "/usr/bin/msedgedriver",
+                "msedgedriver"
+            ]
+            
+            driver = None
+            for path in driver_paths:
+                try:
+                    service = Service(path)
+                    driver = webdriver.Edge(service=service, options=options)
+                    break
+                except:
+                    continue
+            
+            if not driver:
+                # Fallback: lascia che Selenium trovi il driver da solo
+                driver = webdriver.Edge(options=options)
+            
             driver.set_page_load_timeout(30)
             driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
             
