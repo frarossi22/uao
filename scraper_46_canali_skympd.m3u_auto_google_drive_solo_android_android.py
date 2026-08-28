@@ -20,17 +20,11 @@ jobs:
 
     - name: Install dependencies
       run: |
+        pip install --upgrade pip
         pip install selenium webdriver-manager requests
-        sudo apt-get update
-        sudo apt-get install -y xvfb
 
     - name: Setup Microsoft Edge
-      run: |
-        curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-        sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
-        sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-stable.list'
-        sudo apt-get update
-        sudo apt-get install -y microsoft-edge-stable
+      uses: browser-actions/setup-edge@v1
 
     - name: Run scraper
       env:
@@ -39,4 +33,4 @@ jobs:
         REFRESH_TOKEN: ${{ secrets.GDRIVE_REFRESH_TOKEN }}
         DRIVE_FILE_ID: ${{ secrets.GDRIVE_FILE_ID }}
       run: |
-        xvfb-run -a python 46canali_e_10dazn_selenum.py
+        python 46canali_e_10dazn_selenum.py
