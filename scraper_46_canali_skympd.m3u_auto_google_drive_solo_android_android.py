@@ -2,13 +2,12 @@ import base64
 import re
 import requests
 import time
-import os
 
 # Credenziali Google Drive
-CLIENT_ID = os.environ.get("CLIENT_ID", "360991432021-p5qnc2i8jg8vcnv12o33n74cnjl4bk5q.apps.googleusercontent.com")
-CLIENT_SECRET = os.environ.get("CLIENT_SECRET", "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")
-DRIVE_FILE_ID = os.environ.get("DRIVE_FILE_ID", "1w6LgRLFOmEYD88fXYlwwhzbBFZ210JG_")
-REFRESH_TOKEN = os.environ.get("REFRESH_TOKEN", "1//04SFIkmoK5XT4CgYIARAAGAQSNwF-L9IrfgX8z4LgUKT_jsT1BSaCVZ2DO8k2AqpaLcYMZ_MqQvg5SRj6cSmWE0uG3AtU1Egv1kA")
+CLIENT_ID = "360991432021-p5qnc2i8jg8vcnv12o33n74cnjl4bk5q.apps.googleusercontent.com"
+CLIENT_SECRET = "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"
+DRIVE_FILE_ID = "1w6LgRLFOmEYD88fXYlwwhzbBFZ210JG_"
+REFRESH_TOKEN = "1//04SFIkmoK5XT4CgYIARAAGAQSNwF-L9IrfgX8z4LgUKT_jsT1BSaCVZ2DO8k2AqpaLcYMZ_MqQvg5SRj6cSmWE0uG3AtU1Egv1kA"
 
 ACCESS_TOKEN = ""
 BASE_URL = "https://uaznao.com/premium/canalitv/"
@@ -176,6 +175,7 @@ def main():
             
             if res.status_code == 200:
                 if meta["group"] == "DAZN":
+                    # Cerca direttamente il link .mpd
                     mpd_match = re.search(
                         r'https?://[^\s"\'<>]+?\.mpd[^\s"\'<>]*', res.text
                     )
@@ -196,6 +196,7 @@ def main():
                     else:
                         print(f"  ⚠️ Nessun MPD DAZN -> {meta['name']}")
                 else:
+                    # SKY - cerca STREAM_URL
                     match = re.search(r'const\s+STREAM_URL\s*=\s*"([^"]+)"', res.text)
                     if match:
                         raw_stream = match.group(1).replace(r"\/", "/")
