@@ -1,9 +1,9 @@
-name: DAZN & Sky Scraper
+name: Sky & DAZN Scraper
 
 on:
   schedule:
-    - cron: '0 8 * * *'
-  workflow_dispatch:
+    - cron: '0 8 * * *'  # Ogni giorno alle 8:00
+  workflow_dispatch:      # Esecuzione manuale
 
 jobs:
   scrape:
@@ -20,11 +20,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install --upgrade pip
-        pip install selenium webdriver-manager requests
-
-    - name: Setup Microsoft Edge
-      uses: browser-actions/setup-edge@v1
+        pip install requests
 
     - name: Run scraper
       env:
@@ -33,4 +29,4 @@ jobs:
         REFRESH_TOKEN: ${{ secrets.GDRIVE_REFRESH_TOKEN }}
         DRIVE_FILE_ID: ${{ secrets.GDRIVE_FILE_ID }}
       run: |
-        python 46canali_e_10dazn_selenum.py
+        python scraper_46_canali.py
