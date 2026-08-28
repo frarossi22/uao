@@ -2,8 +2,8 @@ name: DAZN & Sky Scraper
 
 on:
   schedule:
-    - cron: '0 8 * * *'
-  workflow_dispatch:
+    - cron: '0 8 * * *'  # Ogni giorno alle 8:00
+  workflow_dispatch:      # Permette esecuzione manuale
 
 jobs:
   scrape:
@@ -20,7 +20,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install selenium requests
+        pip install selenium webdriver-manager requests
         sudo apt-get update
         sudo apt-get install -y xvfb
 
@@ -31,15 +31,6 @@ jobs:
         sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-stable.list'
         sudo apt-get update
         sudo apt-get install -y microsoft-edge-stable
-
-    - name: Setup Edge WebDriver
-      run: |
-        EDGE_VERSION=$(microsoft-edge-stable --version | cut -d' ' -f3)
-        echo "Edge version: $EDGE_VERSION"
-        curl -sSL "https://msedgedriver.azureedge.net/$EDGE_VERSION/edgedriver_linux64.zip" -o edgedriver.zip
-        unzip edgedriver.zip
-        sudo mv msedgedriver /usr/local/bin/
-        chmod +x /usr/local/bin/msedgedriver
 
     - name: Run scraper
       env:
