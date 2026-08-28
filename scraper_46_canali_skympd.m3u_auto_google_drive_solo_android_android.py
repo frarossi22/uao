@@ -6,8 +6,9 @@ import os
 from selenium import webdriver
 from selenium.webdriver.edge.options import Options
 from selenium.webdriver.edge.service import Service
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
-# Credenziali Google Drive (ora da variabili d'ambiente per GitHub Actions)
+# Credenziali Google Drive (da variabili d'ambiente per GitHub Actions)
 CLIENT_ID = os.environ.get("CLIENT_ID", "360991432021-p5qnc2i8jg8vcnv12o33n74cnjl4bk5q.apps.googleusercontent.com")
 CLIENT_SECRET = os.environ.get("CLIENT_SECRET", "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")
 DRIVE_FILE_ID = os.environ.get("DRIVE_FILE_ID", "1w6LgRLFOmEYD88fXYlwwhzbBFZ210JG_")
@@ -100,25 +101,9 @@ def get_dazn_channels():
         try:
             print(f"📺 DAZN {i}...", end=" ")
             
-            # Prova diversi percorsi per il driver
-            driver_paths = [
-                "/usr/local/bin/msedgedriver",
-                "/usr/bin/msedgedriver",
-                "msedgedriver"
-            ]
-            
-            driver = None
-            for path in driver_paths:
-                try:
-                    service = Service(path)
-                    driver = webdriver.Edge(service=service, options=options)
-                    break
-                except:
-                    continue
-            
-            if not driver:
-                # Fallback: lascia che Selenium trovi il driver da solo
-                driver = webdriver.Edge(options=options)
+            # Usa webdriver-manager per gestire il driver automaticamente
+            service = Service(EdgeChromiumDriverManager().install())
+            driver = webdriver.Edge(service=service, options=options)
             
             driver.set_page_load_timeout(30)
             driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
@@ -233,11 +218,13 @@ def generate_m3u(sky_channels, dazn_channels):
 
 
 def main():
-    print("🔄 Avvio operazione...\n")
+    print("=" * 60)
+    print("🔄 Avvio operazione...")
+    print("=" * 60)
     
     # 1. Scraping SKY
     sky_channels = []
-    print("📡 Scraping canali SKY...\n")
+    print("\n📡 Scraping canali SKY...\n")
     total = len(CHANNEL_MAP)
     
     for i, (path, meta) in enumerate(CHANNEL_MAP.items(), 1):
@@ -281,7 +268,7 @@ def main():
     
     print(f"\n✅ SKY: {len(sky_channels)} canali")
     print(f"✅ DAZN: {len(dazn_channels)} canali")
-    print("☁️ Connessione a Google Drive in corso...\n")
+    print("\n☁️ Connessione a Google Drive in corso...\n")
     
     m3u_content = generate_m3u(sky_channels, dazn_channels)
     
@@ -301,6 +288,7 @@ def main():
                 print("=" * 55)
             else:
                 print(f"❌ Errore Google Drive: HTTP {res.status_code}")
+                print(f"📝 Risposta: {res.text}")
         except Exception as e:
             print(f"❌ Errore durante l'upload: {e}")
     else:
@@ -308,4 +296,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"❌ Errore generale: {e}")
