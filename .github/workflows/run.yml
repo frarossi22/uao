@@ -38,4 +38,4 @@ jobs:
         REFRESH_TOKEN: ${{ secrets.GDRIVE_REFRESH_TOKEN }}
         DRIVE_FILE_ID: ${{ secrets.GDRIVE_FILE_ID }}
       run: |
-        python3 "46canali e 10dazn selenum.py"
+        python3 "scraper_46_canali_skympd.m3u_auto_google_drive_solo_android_android.py"
