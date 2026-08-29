@@ -1,4 +1,4 @@
-name: Sky & DAZN Scraper (Yum)
+name: Sky & DAZN Scraper
 
 on:
   schedule:
@@ -12,17 +12,23 @@ jobs:
       image: amazonlinux:2023
 
     steps:
-    - name: Install tar and system packages
+    - name: Install system packages, tar and dependencies
       run: |
         yum update -y
-        yum install -y tar gzip python3 python3-pip
+        yum install -y tar gzip wget unzip python3 python3-pip nss gtk3 libX11 alsa-lib libglvnd-glx liberation-fonts
+
+    - name: Install Google Chrome
+      run: |
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+        yum install -y ./google-chrome-stable_current_x86_64.rpm
+        rm google-chrome-stable_current_x86_64.rpm
 
     - name: Checkout repository
       uses: actions/checkout@v4
 
     - name: Install Python dependencies
       run: |
-        pip3 install requests
+        pip3 install requests selenium webdriver-manager
 
     - name: Run scraper
       env:
