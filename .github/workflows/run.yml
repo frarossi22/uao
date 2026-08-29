@@ -2,8 +2,8 @@ name: Sky & DAZN Scraper
 
 on:
   schedule:
-    - cron: '0 7 * * *'    # Primo avvio alle 09:00 ora italiana (07:00 UTC)
-    - cron: '30 12 * * *'  # Secondo avvio alle 14:30 ora italiana (12:30 UTC)
+    - cron: '0 6 * * *'    # Primo avvio alle 08:00 ora italiana (06:00 UTC)
+    - cron: '15 15 * * *'  # Secondo avvio alle 17:15 ora italiana (15:15 UTC)
   workflow_dispatch:
 
 jobs:
