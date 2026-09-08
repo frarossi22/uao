@@ -25,4 +25,4 @@ jobs:
 
     - name: Run Python automation script
       run: |
-        python3 "scraper_46_canali_skympd.m3u_auto_google_drive_solo_android_android.py"
+        python3 "uaznao_56_canali_auto_google_drive_android.py"
