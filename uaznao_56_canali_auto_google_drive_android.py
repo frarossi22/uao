@@ -1,6 +1,6 @@
 """
 Scraper Uaznao - Universale (Windows + Android)
-- 9 CINEMA + 21 SPORT + 16 INTRATTENIMENTO + 10 DAZN = 56 canali
+- CINEMA + SPORT + INTRATTENIMENTO + DAZN + BLU SPORT
 - Carica skympd.m3u su Google Drive (sovrascrive)
 - Nessun lettore, solo scraping + upload
 - Funziona su Windows, Android, Linux, macOS
@@ -30,7 +30,7 @@ HEADERS = {
 }
 
 # ============================================================
-# CANALI AGGIORNATI (56 canali - con sport254-259)
+# CHANNEL MAP PULITA
 # ============================================================
 CHANNEL_MAP = {
     # CINEMA (9 canali)
@@ -44,7 +44,7 @@ CHANNEL_MAP = {
     "cinemacollection": {"name": "Sky Cinema Collection", "group": "CINEMA"},
     "cinemadrama": {"name": "Sky Cinema Drama", "group": "CINEMA"},
     
-    # SPORT (21 canali - con sport254-259)
+    # SPORT (21 canali originali)
     "sport24": {"name": "Sky Sport 24", "group": "SPORT"},
     "sportuno": {"name": "Sky Sport Uno", "group": "SPORT"},
     "calcio": {"name": "Sky Sport Calcio", "group": "SPORT"},
@@ -129,15 +129,15 @@ def decode_ck(ck):
     except Exception:
         return None
 
-def get_dazn_channels():
-    """Estrae STREAM_URL e STREAM_CLEAR_KEYS per DAZN 1-10"""
+def get_event_channels(folder_name, group_name, count=10):
+    """Estrae STREAM_URL e STREAM_CLEAR_KEYS per canali a eventi (DAZN, BLU SPORT, ecc.)"""
     channels = []
     
-    for i in range(1, 11):
+    for i in range(1, count + 1):
         try:
-            log(f"📺 DAZN {i}...")
+            log(f"📺 {group_name} {i}...")
             
-            url = f"{BASE_URL}daznch/player_event.php?event={i}"
+            url = f"{BASE_URL}{folder_name}/player_event.php?event={i}"
             res = requests.get(url, headers=HEADERS, timeout=15)
             
             if res.status_code != 200:
@@ -146,13 +146,11 @@ def get_dazn_channels():
             
             html = res.text
             
-            # Cerca STREAM_URL
             mpd_match = re.search(r'STREAM_URL\s*=\s*["\']([^"\']+)["\']', html, re.IGNORECASE)
             if not mpd_match:
                 log("  ❌ STREAM_URL non trovato")
                 continue
             
-            # Cerca STREAM_CLEAR_KEYS
             keys_match = re.search(r'STREAM_CLEAR_KEYS\s*=\s*["\']([^"\']+)["\']', html, re.IGNORECASE)
             if not keys_match:
                 log("  ❌ STREAM_CLEAR_KEYS non trovato")
@@ -170,7 +168,8 @@ def get_dazn_channels():
             log(f"  ✅ OK")
             
             channels.append({
-                "name": f"DAZN {i}",
+                "name": f"{group_name} {i}",
+                "group": group_name,
                 "kid": kid.lower(),
                 "key": key.lower(),
                 "mpd": mpd_url
@@ -225,7 +224,7 @@ def scrape_sky_channels():
     
     return channels
 
-def generate_m3u(sky_channels, dazn_channels):
+def generate_m3u(sky_channels, event_channels_dict):
     """Genera il file M3U"""
     content = (
         "#EXTM3U"
@@ -237,12 +236,11 @@ def generate_m3u(sky_channels, dazn_channels):
         "CINEMA": "Film - Serie TV",
         "INTRATTENIMENTO": "SkyEntertainment",
         "DAZN": "DAZN",
+        "BLU SPORT": "BLU SPORT",
     }
     
-    # Ordine dei gruppi
-    group_order = ["Film - Serie TV", "SkySport", "SkyEntertainment", "DAZN"]
+    group_order = ["Film - Serie TV", "SkySport", "SkyEntertainment", "DAZN", "BLU SPORT"]
     
-    # Raggruppa i canali per gruppo
     by_group = {}
     for ch in sky_channels:
         grp = group_map.get(ch["group"], ch["group"])
@@ -250,33 +248,28 @@ def generate_m3u(sky_channels, dazn_channels):
             by_group[grp] = []
         by_group[grp].append(ch)
     
-    # Aggiungi DAZN
-    if dazn_channels:
-        if "DAZN" not in by_group:
-            by_group["DAZN"] = []
-        by_group["DAZN"].extend(dazn_channels)
+    for grp_key, ch_list in event_channels_dict.items():
+        mapped_grp = group_map.get(grp_key, grp_key)
+        if mapped_grp not in by_group:
+            by_group[mapped_grp] = []
+        by_group[mapped_grp].extend(ch_list)
     
-    # Genera M3U seguendo l'ordine
     for grp in group_order:
         if grp not in by_group:
             continue
         for ch in by_group[grp]:
-            # Determina il nome per tvg-id
             tvg_name = ch.get("name", "Canale")
             
             content += f'#EXTINF:-1 group-title="{grp}" tvg-id="{tvg_name}",{tvg_name}\n'
             
-            # Gestione DRM per Sky
             if "clear_key" in ch and ch["clear_key"]:
                 content += "#KODIPROP:inputstream.adaptive.license_type=clearkey\n"
                 content += f'#KODIPROP:inputstream.adaptive.license_key={ch["clear_key"]}\n'
             
-            # Gestione DRM per DAZN
             if "kid" in ch and "key" in ch:
                 content += "#KODIPROP:inputstream.adaptive.license_type=clearkey\n"
                 content += f'#KODIPROP:inputstream.adaptive.license_key={ch["kid"]}:{ch["key"]}\n'
             
-            # URL dello stream
             url = ch.get("url") or ch.get("mpd")
             if url:
                 content += f'{url}\n'
@@ -319,34 +312,38 @@ def upload_to_drive(content):
 # ============================================================
 def main():
     print("=" * 50)
-    print("📺 Uaznao Scraper - 56 canali (9 Cinema + 21 Sport + 16 Intrattenimento + 10 DAZN)")
+    print("📺 Uaznao Scraper - Sky, DAZN & Blu Sport")
     print("=" * 50)
     log("Avvio...")
     
-    # 1. Scraping Sky
     sky_channels = scrape_sky_channels()
     
-    # 2. Scraping DAZN
     log("\n📡 Estrazione DAZN 1-10...")
-    dazn_channels = get_dazn_channels()
+    dazn_channels = get_event_channels("daznch", "DAZN", 10)
     
-    if not sky_channels and not dazn_channels:
+    log("\n📡 Estrazione Blu Sport 1-10...")
+    blusport_channels = get_event_channels("blusport", "BLU SPORT", 10)
+    
+    if not sky_channels and not dazn_channels and not blusport_channels:
         log("\n❌ Nessun canale trovato!")
         sys.exit(1)
     
     log(f"\n✅ SKY: {len(sky_channels)} canali")
     log(f"✅ DAZN: {len(dazn_channels)} canali")
+    log(f"✅ BLU SPORT: {len(blusport_channels)} canali")
     
-    # 3. Genera M3U
+    event_dict = {
+        "DAZN": dazn_channels,
+        "BLU SPORT": blusport_channels
+    }
+    
     log("\n📝 Generazione skympd.m3u...")
-    m3u_content = generate_m3u(sky_channels, dazn_channels)
+    m3u_content = generate_m3u(sky_channels, event_dict)
     
-    # 4. Salva localmente
     with open("skympd.m3u", "w", encoding="utf-8") as f:
         f.write(m3u_content)
     log("📁 skympd.m3u salvato localmente")
     
-    # 5. Upload su Drive
     log("\n☁️ Connessione a Google Drive...")
     if upload_to_drive(m3u_content):
         log("\n🎉 Operazione completata con successo!")
