@@ -1,6 +1,6 @@
 """
 Scraper Uaznao - Universale (Windows + Android)
-- CINEMA + SPORT + INTRATTENIMENTO + DAZN + BLU SPORT
+- CINEMA + SPORT + INTRATTENIMENTO + DAZN + BLU SPORT + SERIE B
 - Carica skympd.m3u su Google Drive (sovrascrive)
 - Nessun lettore, solo scraping + upload
 - Funziona su Windows, Android, Linux, macOS
@@ -8,6 +8,7 @@ Scraper Uaznao - Universale (Windows + Android)
 
 import base64
 import re
+import json
 import requests
 import time
 import sys
@@ -30,43 +31,44 @@ HEADERS = {
 }
 
 # ============================================================
-# CHANNEL MAP PULITA
+# CHANNEL MAP – Gruppi: Sky Cinema, Sky Sport, INTRATTENIMENTO
 # ============================================================
 CHANNEL_MAP = {
-    # CINEMA (9 canali)
-    "cinema1": {"name": "Sky Cinema Uno", "group": "CINEMA"},
-    "cinemastories": {"name": "Sky Cinema Stories", "group": "CINEMA"},
-    "cinemafamily": {"name": "Sky Cinema Family", "group": "CINEMA"},
-    "cinemacomedy": {"name": "Sky Cinema Comedy", "group": "CINEMA"},
-    "cinemaaction": {"name": "Sky Cinema Action", "group": "CINEMA"},
-    "cinemasuspense": {"name": "Sky Cinema Suspense", "group": "CINEMA"},
-    "cinemaromance": {"name": "Sky Cinema Romance", "group": "CINEMA"},
-    "cinemacollection": {"name": "Sky Cinema Collection", "group": "CINEMA"},
-    "cinemadrama": {"name": "Sky Cinema Drama", "group": "CINEMA"},
-    
-    # SPORT (21 canali originali)
-    "sport24": {"name": "Sky Sport 24", "group": "SPORT"},
-    "sportuno": {"name": "Sky Sport Uno", "group": "SPORT"},
-    "calcio": {"name": "Sky Sport Calcio", "group": "SPORT"},
-    "sport251": {"name": "Sky Sport 251", "group": "SPORT"},
-    "sport252": {"name": "Sky Sport 252", "group": "SPORT"},
-    "sport253": {"name": "Sky Sport 253", "group": "SPORT"},
-    "sport254": {"name": "Sky Sport 254", "group": "SPORT"},
-    "sport255": {"name": "Sky Sport 255", "group": "SPORT"},
-    "sport256": {"name": "Sky Sport 256", "group": "SPORT"},
-    "sport257": {"name": "Sky Sport 257", "group": "SPORT"},
-    "sport258": {"name": "Sky Sport 258", "group": "SPORT"},
-    "sport259": {"name": "Sky Sport 259", "group": "SPORT"},
-    "arena": {"name": "Sky Sport Arena", "group": "SPORT"},
-    "sportmax": {"name": "Sky Sport Max", "group": "SPORT"},
-    "sportmix": {"name": "Sky Sport Mix", "group": "SPORT"},
-    "legend": {"name": "Sky Sport Legend", "group": "SPORT"},
-    "f1": {"name": "Sky Sport F1", "group": "SPORT"},
-    "motogp": {"name": "Sky Sport MotoGP", "group": "SPORT"},
-    "tennis": {"name": "Sky Sport Tennis", "group": "SPORT"},
-    "basket": {"name": "Sky Sport Basket", "group": "SPORT"},
-    "golf": {"name": "Sky Sport Golf", "group": "SPORT"},
-    
+    # SKY CINEMA (9 canali)
+    "cinema1": {"name": "Sky Cinema Uno", "group": "Sky Cinema"},
+    "cinemastories": {"name": "Sky Cinema Stories", "group": "Sky Cinema"},
+    "cinemafamily": {"name": "Sky Cinema Family", "group": "Sky Cinema"},
+    "cinemacomedy": {"name": "Sky Cinema Comedy", "group": "Sky Cinema"},
+    "cinemaaction": {"name": "Sky Cinema Action", "group": "Sky Cinema"},
+    "cinemasuspense": {"name": "Sky Cinema Suspense", "group": "Sky Cinema"},
+    "cinemaromance": {"name": "Sky Cinema Romance", "group": "Sky Cinema"},
+    "cinemacollection": {"name": "Sky Cinema Collection", "group": "Sky Cinema"},
+    "cinemadrama": {"name": "Sky Cinema Drama", "group": "Sky Cinema"},
+
+    # SKY SPORT (22 canali)
+    "sport24": {"name": "Sky Sport 24", "group": "Sky Sport"},
+    "sportuno": {"name": "Sky Sport Uno", "group": "Sky Sport"},
+    "calcio": {"name": "Sky Sport Calcio", "group": "Sky Sport"},
+    "sport251": {"name": "Sky Sport 251", "group": "Sky Sport"},
+    "sport252": {"name": "Sky Sport 252", "group": "Sky Sport"},
+    "sport253": {"name": "Sky Sport 253", "group": "Sky Sport"},
+    "sport254": {"name": "Sky Sport 254", "group": "Sky Sport"},
+    "sport255": {"name": "Sky Sport 255", "group": "Sky Sport"},
+    "sport256": {"name": "Sky Sport 256", "group": "Sky Sport"},
+    "sport257": {"name": "Sky Sport 257", "group": "Sky Sport"},
+    "sport258": {"name": "Sky Sport 258", "group": "Sky Sport"},
+    "sport259": {"name": "Sky Sport 259", "group": "Sky Sport"},
+    "arena": {"name": "Sky Sport Arena", "group": "Sky Sport"},
+    "sportmax": {"name": "Sky Sport Max", "group": "Sky Sport"},
+    "sportmix": {"name": "Sky Sport Mix", "group": "Sky Sport"},
+    "legend": {"name": "Sky Sport Legend", "group": "Sky Sport"},
+    "f1": {"name": "Sky Sport F1", "group": "Sky Sport"},
+    "motogp": {"name": "Sky Sport MotoGP", "group": "Sky Sport"},
+    "tennis": {"name": "Sky Sport Tennis", "group": "Sky Sport"},
+    "basket": {"name": "Sky Sport Basket", "group": "Sky Sport"},
+    "golf": {"name": "Sky Sport Golf", "group": "Sky Sport"},
+    "amazonlive": {"name": "Amazon Live", "group": "Sky Sport"},
+
     # INTRATTENIMENTO (16 canali)
     "uno": {"name": "Sky Uno", "group": "INTRATTENIMENTO"},
     "unoplus": {"name": "Sky Uno Plus", "group": "INTRATTENIMENTO"},
@@ -85,6 +87,22 @@ CHANNEL_MAP = {
     "cartoonnetwork": {"name": "Cartoon Network", "group": "INTRATTENIMENTO"},
     "boomerang": {"name": "Boomerang", "group": "INTRATTENIMENTO"},
 }
+
+# ============================================================
+# CANALI A EVENTI (DAZN CH, BluSport, SerieB)
+# ============================================================
+EVENT_FOLDERS = {
+    "DAZN CH": {"folder": "daznch", "count": 10, "prefix": "DAZN"},
+    "BluSport": {"folder": "blusport", "count": 10, "prefix": "Blu Sport"},
+}
+
+# Canali SerieB: usano un file diverso (player_serieb.php?event=N)
+SERIEB_CHANNELS = [
+    {"path": "player_serieb.php?event=1", "name": "Serie B 1", "group": "SerieB"},
+    {"path": "player_serieb.php?event=2", "name": "Serie B 2", "group": "SerieB"},
+    {"path": "player_serieb.php?event=3", "name": "Serie B 3", "group": "SerieB"},
+    {"path": "player_serieb.php?event=4", "name": "Serie B 4", "group": "SerieB"},
+]
 
 # ============================================================
 # FUNZIONI
@@ -129,74 +147,148 @@ def decode_ck(ck):
     except Exception:
         return None
 
-def get_event_channels(folder_name, group_name, count=10):
-    """Estrae STREAM_URL e STREAM_CLEAR_KEYS per canali a eventi (DAZN, BLU SPORT, ecc.)"""
+def parse_clear_keys(raw_keys):
+    """
+    Interpreta STREAM_CLEAR_KEYS in tutti i formati possibili:
+    - stringa "kid:key"
+    - array di stringhe ["kid:key", ...]
+    - array di oggetti [{"kid": "...", "key": "..."}, ...]
+    - oggetto mappa {"kid": "key", ...}
+    - oggetto singolo {"kid": "...", "key": "..."}
+    Restituisce (kid, key) oppure (None, None)
+    """
+    if not raw_keys:
+        return None, None
+
+    raw_keys = raw_keys.strip().rstrip(";").strip()
+
+    parsed = None
+    try:
+        parsed = json.loads(raw_keys)
+    except (json.JSONDecodeError, ValueError):
+        # Non è JSON: potrebbe essere una stringa tra apici
+        cleaned = raw_keys.strip("\"'").strip()
+        if ":" in cleaned:
+            parts = cleaned.split(":", 1)
+            return parts[0].strip().lower(), parts[1].strip().lower()
+        return None, None
+
+    if isinstance(parsed, str):
+        if ":" in parsed:
+            parts = parsed.split(":", 1)
+            return parts[0].strip().lower(), parts[1].strip().lower()
+        return None, None
+
+    if isinstance(parsed, list):
+        if len(parsed) == 0:
+            return None, None
+        first = parsed[0]
+        if isinstance(first, str) and ":" in first:
+            parts = first.split(":", 1)
+            return parts[0].strip().lower(), parts[1].strip().lower()
+        if isinstance(first, dict):
+            kid = first.get("kid")
+            key = first.get("key")
+            if kid and key:
+                return str(kid).strip().lower(), str(key).strip().lower()
+        return None, None
+
+    if isinstance(parsed, dict):
+        if "kid" in parsed and "key" in parsed:
+            return str(parsed["kid"]).strip().lower(), str(parsed["key"]).strip().lower()
+        # mappa kid:key
+        if len(parsed) > 0:
+            kid, key = next(iter(parsed.items()))
+            return str(kid).strip().lower(), str(key).strip().lower()
+        return None, None
+
+    return None, None
+
+def extract_event_channel(url, name, group):
+    """
+    Estrae un singolo canale a eventi (DAZN, BluSport, SerieB).
+    Ritorna un dict o None.
+    """
+    try:
+        res = requests.get(url, headers=HEADERS, timeout=15)
+        if res.status_code != 200:
+            log(f"  ❌ HTTP {res.status_code}")
+            return None
+
+        html = res.text
+
+        mpd_match = re.search(r'STREAM_URL\s*=\s*["\']([^"\']*)["\']', html, re.IGNORECASE)
+        if not mpd_match:
+            log("  ⚠️ STREAM_URL non trovato")
+            return None
+
+        mpd_url = mpd_match.group(1).replace(r"\/", "/").strip()
+        if not mpd_url:
+            log("  ⏳ STREAM_URL vuoto (in attesa)")
+            return None
+
+        keys_match = re.search(r'STREAM_CLEAR_KEYS\s*=\s*(.+?);', html, re.IGNORECASE | re.DOTALL)
+        if not keys_match:
+            log("  ⚠️ STREAM_CLEAR_KEYS non trovato")
+            return None
+
+        kid, key = parse_clear_keys(keys_match.group(1))
+        if not kid or not key:
+            log("  ⚠️ ClearKey non valida")
+            return None
+
+        log("  ✅ OK")
+        return {
+            "name": name,
+            "group": group,
+            "kid": kid,
+            "key": key,
+            "mpd": mpd_url,
+        }
+    except Exception as e:
+        log(f"  ❌ ERRORE: {e}")
+        return None
+
+def get_event_channels(folder_name, group_name, prefix, count=10):
+    """Estrae canali DAZN / BluSport (player_event.php?event=N)"""
     channels = []
-    
+
     for i in range(1, count + 1):
-        try:
-            log(f"📺 {group_name} {i}...")
-            
-            url = f"{BASE_URL}{folder_name}/player_event.php?event={i}"
-            res = requests.get(url, headers=HEADERS, timeout=15)
-            
-            if res.status_code != 200:
-                log(f"  ❌ HTTP {res.status_code}")
-                continue
-            
-            html = res.text
-            
-            mpd_match = re.search(r'STREAM_URL\s*=\s*["\']([^"\']+)["\']', html, re.IGNORECASE)
-            if not mpd_match:
-                log("  ❌ STREAM_URL non trovato")
-                continue
-            
-            keys_match = re.search(r'STREAM_CLEAR_KEYS\s*=\s*["\']([^"\']+)["\']', html, re.IGNORECASE)
-            if not keys_match:
-                log("  ❌ STREAM_CLEAR_KEYS non trovato")
-                continue
-            
-            mpd_url = mpd_match.group(1)
-            clear_keys = keys_match.group(1)
-            
-            if ':' not in clear_keys:
-                log("  ❌ Formato KEY non valido")
-                continue
-            
-            kid, key = clear_keys.split(':')
-            
-            log(f"  ✅ OK")
-            
-            channels.append({
-                "name": f"{group_name} {i}",
-                "group": group_name,
-                "kid": kid.lower(),
-                "key": key.lower(),
-                "mpd": mpd_url
-            })
-            
-        except Exception as e:
-            log(f"  ❌ ERRORE: {e}")
-            continue
-        
+        log(f"📺 {prefix} {i}...")
+        url = f"{BASE_URL}{folder_name}/player_event.php?event={i}"
+        ch = extract_event_channel(url, f"{prefix} {i}", group_name)
+        if ch:
+            channels.append(ch)
         time.sleep(1)
-    
+
+    return channels
+
+def get_serieb_channels():
+    """Estrae canali Serie B (player_serieb.php?event=N)"""
+    channels = []
+    for item in SERIEB_CHANNELS:
+        log(f"📺 {item['name']}...")
+        url = f"{BASE_URL}{item['path']}"
+        ch = extract_event_channel(url, item["name"], item["group"])
+        if ch:
+            channels.append(ch)
+        time.sleep(1)
     return channels
 
 def scrape_sky_channels():
     """Scraping dei canali Sky"""
     channels = []
     total = len(CHANNEL_MAP)
-    
+
     log(f"📡 Scraping {total} canali Sky...")
-    
+
     for i, (path, meta) in enumerate(CHANNEL_MAP.items(), 1):
         try:
             page_url = f"{BASE_URL}{path}.php"
             log(f"[{i}/{total}] 📡 {meta['name']}...")
-            
+
             res = requests.get(page_url, headers=HEADERS, timeout=10)
-            
+
             if res.status_code == 200:
                 match = re.search(r'const\s+STREAM_URL\s*=\s*"([^"]+)"', res.text)
                 if match:
@@ -204,7 +296,7 @@ def scrape_sky_channels():
                     clean_url = raw_stream.split("?")[0]
                     ck_match = re.search(r"ck=([^&]+)", raw_stream)
                     clear_key = decode_ck(ck_match.group(1)) if ck_match else None
-                    
+
                     channels.append({
                         "name": meta["name"],
                         "group": meta["group"],
@@ -216,12 +308,12 @@ def scrape_sky_channels():
                     log(f"  ⚠️ Nessun flusso")
             else:
                 log(f"  ❌ HTTP {res.status_code}")
-                
+
         except Exception as e:
             log(f"  ❌ Errore: {e}")
-        
+
         time.sleep(0.3)
-    
+
     return channels
 
 def generate_m3u(sky_channels, event_channels_dict):
@@ -230,69 +322,71 @@ def generate_m3u(sky_channels, event_channels_dict):
         "#EXTM3U"
         ' url-tvg="https://github.com/qwertyuiop8899/TV/raw/refs/heads/main/epg.xml.gz"\n'
     )
-    
+
+    # Mappa gruppi interni -> gruppi M3U
     group_map = {
-        "SPORT": "SkySport",
-        "CINEMA": "Film - Serie TV",
+        "Sky Sport": "SkySport",
+        "Sky Cinema": "Film - Serie TV",
         "INTRATTENIMENTO": "SkyEntertainment",
-        "DAZN": "DAZN",
-        "BLU SPORT": "BLU SPORT",
+        "DAZN CH": "DAZN",
+        "BluSport": "BLU SPORT",
+        "SerieB": "SerieB",
     }
-    
-    group_order = ["Film - Serie TV", "SkySport", "SkyEntertainment", "DAZN", "BLU SPORT"]
-    
+
+    group_order = ["Film - Serie TV", "SkySport", "SkyEntertainment", "DAZN", "BLU SPORT", "SerieB"]
+
     by_group = {}
     for ch in sky_channels:
         grp = group_map.get(ch["group"], ch["group"])
         if grp not in by_group:
             by_group[grp] = []
         by_group[grp].append(ch)
-    
+
     for grp_key, ch_list in event_channels_dict.items():
         mapped_grp = group_map.get(grp_key, grp_key)
         if mapped_grp not in by_group:
             by_group[mapped_grp] = []
         by_group[mapped_grp].extend(ch_list)
-    
+
     for grp in group_order:
         if grp not in by_group:
             continue
         for ch in by_group[grp]:
             tvg_name = ch.get("name", "Canale")
-            
+
             content += f'#EXTINF:-1 group-title="{grp}" tvg-id="{tvg_name}",{tvg_name}\n'
-            
+
             if "clear_key" in ch and ch["clear_key"]:
                 content += "#KODIPROP:inputstream.adaptive.license_type=clearkey\n"
                 content += f'#KODIPROP:inputstream.adaptive.license_key={ch["clear_key"]}\n'
-            
+
             if "kid" in ch and "key" in ch:
                 content += "#KODIPROP:inputstream.adaptive.license_type=clearkey\n"
                 content += f'#KODIPROP:inputstream.adaptive.license_key={ch["kid"]}:{ch["key"]}\n'
-            
+
             url = ch.get("url") or ch.get("mpd")
             if url:
                 content += f'{url}\n'
-    
+
     return content
 
 def upload_to_drive(content):
     """Carica il file su Google Drive (sovrascrive)"""
     try:
         log("☁️ Caricamento su Google Drive...")
-        
+
         if not refresh_access_token():
             log("❌ Impossibile ottenere token")
             return False
-        
+
         url = f"https://www.googleapis.com/upload/drive/v3/files/{DRIVE_FILE_ID}?uploadType=media"
         headers = {
             "Authorization": f"Bearer {ACCESS_TOKEN}",
             "Content-Type": "text/plain",
         }
-        
+
         res = requests.patch(url, headers=headers, data=content.encode("utf-8"), timeout=30)
-        
+
         if res.status_code == 200:
             log("=" * 50)
             log("✅ skympd.m3u caricato su Google Drive!")
@@ -302,7 +396,7 @@ def upload_to_drive(content):
             log(f"❌ Errore Google Drive: HTTP {res.status_code}")
             log(f"📄 Risposta: {res.text[:200]}")
             return False
-            
+
     except Exception as e:
         log(f"❌ Errore upload: {e}")
         return False
@@ -312,38 +406,38 @@ def upload_to_drive(content):
 # ============================================================
 def main():
     print("=" * 50)
-    print("📺 Uaznao Scraper - Sky, DAZN & Blu Sport")
+    print("📺 Uaznao Scraper - Sky, DAZN, Blu Sport & Serie B")
     print("=" * 50)
     log("Avvio...")
-    
+
     sky_channels = scrape_sky_channels()
-    
-    log("\n📡 Estrazione DAZN 1-10...")
-    dazn_channels = get_event_channels("daznch", "DAZN", 10)
-    
-    log("\n📡 Estrazione Blu Sport 1-10...")
-    blusport_channels = get_event_channels("blusport", "BLU SPORT", 10)
-    
-    if not sky_channels and not dazn_channels and not blusport_channels:
+
+    event_dict = {}
+
+    for group_name, cfg in EVENT_FOLDERS.items():
+        log(f"\n📡 Estrazione {group_name} 1-{cfg['count']}...")
+        event_dict[group_name] = get_event_channels(
+            cfg["folder"], group_name, cfg["prefix"], cfg["count"]
+        )
+
+    log("\n📡 Estrazione SerieB 1-4...")
+    event_dict["SerieB"] = get_serieb_channels()
+
+    if not sky_channels and not any(event_dict.values()):
         log("\n❌ Nessun canale trovato!")
         sys.exit(1)
-    
+
     log(f"\n✅ SKY: {len(sky_channels)} canali")
-    log(f"✅ DAZN: {len(dazn_channels)} canali")
-    log(f"✅ BLU SPORT: {len(blusport_channels)} canali")
-    
-    event_dict = {
-        "DAZN": dazn_channels,
-        "BLU SPORT": blusport_channels
-    }
-    
+    for group_name, chs in event_dict.items():
+        log(f"✅ {group_name}: {len(chs)} canali")
+
     log("\n📝 Generazione skympd.m3u...")
     m3u_content = generate_m3u(sky_channels, event_dict)
-    
+
     with open("skympd.m3u", "w", encoding="utf-8") as f:
         f.write(m3u_content)
     log("📁 skympd.m3u salvato localmente")
-    
+
     log("\n☁️ Connessione a Google Drive...")
     if upload_to_drive(m3u_content):
         log("\n🎉 Operazione completata con successo!")
