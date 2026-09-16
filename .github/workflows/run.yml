@@ -2,8 +2,8 @@ name: Sky46 & DAZN10 Scraper
 
 on:
   schedule:
-    # 5:00 UTC = 7:00 Italia (ora legale) / 6:00 Italia (ora solare)
-    - cron: '0 5 * * *'
+    # 4:00 UTC = 6:00 Italia (ora legale) / 5:00 Italia (ora solare)
+    - cron: '0 4 * * *'
   workflow_dispatch:
 
 jobs:
