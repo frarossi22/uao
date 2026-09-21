@@ -1,4 +1,4 @@
-name: Sky46 & DAZN10 Scraper
+name: Scraper uaznao 78 canali
 
 on:
   schedule:
@@ -26,8 +26,8 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install requests
-        pip install selenium
+        pip install requests selenium
+        pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
 
     - name: Run Python automation script
       run: |
