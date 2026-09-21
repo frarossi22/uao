@@ -96,12 +96,12 @@ EVENT_FOLDERS = {
     "BluSport": {"folder": "blusport", "count": 10, "prefix": "Blu Sport"},
 }
 
-# Canali SerieB: usano un file diverso (player_serieb.php?event=N)
+# Canali SerieB: percorsi con prefisso "serieb/" (fix URL)
 SERIEB_CHANNELS = [
-    {"path": "player_serieb.php?event=1", "name": "Serie B 1", "group": "SerieB"},
-    {"path": "player_serieb.php?event=2", "name": "Serie B 2", "group": "SerieB"},
-    {"path": "player_serieb.php?event=3", "name": "Serie B 3", "group": "SerieB"},
-    {"path": "player_serieb.php?event=4", "name": "Serie B 4", "group": "SerieB"},
+    {"path": "serieb/player_serieb.php?event=1", "name": "Serie B 1", "group": "SerieB"},
+    {"path": "serieb/player_serieb.php?event=2", "name": "Serie B 2", "group": "SerieB"},
+    {"path": "serieb/player_serieb.php?event=3", "name": "Serie B 3", "group": "SerieB"},
+    {"path": "serieb/player_serieb.php?event=4", "name": "Serie B 4", "group": "SerieB"},
 ]
 
 # ============================================================
@@ -151,7 +151,7 @@ def parse_clear_keys(raw_keys):
     """
     Interpreta STREAM_CLEAR_KEYS in tutti i formati possibili:
     - stringa "kid:key"
-    - array di stringhe ["kid:key", ...]
+    - array di stringhe ["kid:key", ...]      <- Amazon Live
     - array di oggetti [{"kid": "...", "key": "..."}, ...]
     - oggetto mappa {"kid": "key", ...}
     - oggetto singolo {"kid": "...", "key": "..."}
@@ -166,7 +166,6 @@ def parse_clear_keys(raw_keys):
     try:
         parsed = json.loads(raw_keys)
     except (json.JSONDecodeError, ValueError):
-        # Non è JSON: potrebbe essere una stringa tra apici
         cleaned = raw_keys.strip("\"'").strip()
         if ":" in cleaned:
             parts = cleaned.split(":", 1)
@@ -196,7 +195,6 @@ def parse_clear_keys(raw_keys):
     if isinstance(parsed, dict):
         if "kid" in parsed and "key" in parsed:
             return str(parsed["kid"]).strip().lower(), str(parsed["key"]).strip().lower()
-        # mappa kid:key
         if len(parsed) > 0:
             kid, key = next(iter(parsed.items()))
             return str(kid).strip().lower(), str(key).strip().lower()
@@ -264,7 +262,7 @@ def get_event_channels(folder_name, group_name, prefix, count=10):
     return channels
 
 def get_serieb_channels():
-    """Estrae canali Serie B (player_serieb.php?event=N)"""
+    """Estrae canali Serie B (serieb/player_serieb.php?event=N)"""
     channels = []
     for item in SERIEB_CHANNELS:
         log(f"📺 {item['name']}...")
@@ -276,7 +274,12 @@ def get_serieb_channels():
     return channels
 
 def scrape_sky_channels():
-    """Scraping dei canali Sky"""
+    """
+    Scraping dei canali Sky.
+    Supporta DUE formati di chiave:
+    - ck= nell'URL (formato Sky classico)
+    - STREAM_CLEAR_KEYS nell'HTML (formato Amazon Live e altri)
+    """
     channels = []
     total = len(CHANNEL_MAP)
 
@@ -294,15 +297,35 @@ def scrape_sky_channels():
                 if match:
                     raw_stream = match.group(1).replace(r"\/", "/")
                     clean_url = raw_stream.split("?")[0]
+
+                    # Prova PRIMA il formato Sky classico (ck= nell'URL)
                     ck_match = re.search(r"ck=([^&]+)", raw_stream)
                     clear_key = decode_ck(ck_match.group(1)) if ck_match else None
 
-                    channels.append({
+                    kid = None
+                    key = None
+
+                    # FALLBACK: STREAM_CLEAR_KEYS nell'HTML (per Amazon Live)
+                    if not clear_key:
+                        keys_match = re.search(
+                            r'STREAM_CLEAR_KEYS\s*=\s*(.+?);',
+                            res.text, re.IGNORECASE | re.DOTALL
+                        )
+                        if keys_match:
+                            kid, key = parse_clear_keys(keys_match.group(1))
+
+                    ch_dict = {
                         "name": meta["name"],
                         "group": meta["group"],
                         "url": clean_url,
-                        "clear_key": clear_key,
-                    })
+                    }
+                    if clear_key:
+                        ch_dict["clear_key"] = clear_key
+                    if kid and key:
+                        ch_dict["kid"] = kid
+                        ch_dict["key"] = key
+
+                    channels.append(ch_dict)
                     log(f"  ✅ OK")
                 else:
                     log(f"  ⚠️ Nessun flusso")
@@ -323,7 +346,6 @@ def generate_m3u(sky_channels, event_channels_dict):
         ' url-tvg="https://github.com/qwertyuiop8899/TV/raw/refs/heads/main/epg.xml.gz"\n'
     )
 
-    # Mappa gruppi interni -> gruppi M3U
     group_map = {
         "Sky Sport": "SkySport",
         "Sky Cinema": "Film - Serie TV",
@@ -356,11 +378,12 @@ def generate_m3u(sky_channels, event_channels_dict):
 
             content += f'#EXTINF:-1 group-title="{grp}" tvg-id="{tvg_name}",{tvg_name}\n'
 
+            # Preferenza: clear_key (formato Sky classico)
+            # Altrimenti kid:key (formato Amazon Live / DAZN / BluSport / SerieB)
             if "clear_key" in ch and ch["clear_key"]:
                 content += "#KODIPROP:inputstream.adaptive.license_type=clearkey\n"
                 content += f'#KODIPROP:inputstream.adaptive.license_key={ch["clear_key"]}\n'
-
-            if "kid" in ch and "key" in ch:
+            elif "kid" in ch and "key" in ch:
                 content += "#KODIPROP:inputstream.adaptive.license_type=clearkey\n"
                 content += f'#KODIPROP:inputstream.adaptive.license_key={ch["kid"]}:{ch["key"]}\n'
 
