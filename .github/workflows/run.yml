@@ -5,8 +5,11 @@ on:
     # 1° avvio: 03:00 UTC = 05:00 Italia (ora legale) / 04:00 Italia (ora solare)
     - cron: '0 3 * * *'
 
-    # 2° avvio: 06:30 UTC = 08:30 Italia (ora legale) / 07:30 Italia (ora solare)
-    - cron: '30 6 * * *'
+    # 2° avvio: 06:00 UTC = 08:00 Italia (ora legale) / 07:00 Italia (ora solare)
+    - cron: '0 6 * * *'
+
+    # 3° avvio: 12:00 UTC = 14:00 Italia (ora legale) / 13:00 Italia (ora solare)
+    - cron: '0 12 * * *'
 
   workflow_dispatch:
 
