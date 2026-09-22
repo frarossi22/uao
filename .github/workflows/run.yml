@@ -1,4 +1,4 @@
-name: Scraper uaznao 78 canali
+name: Uaznao 78 fix
 
 on:
   schedule:
@@ -31,4 +31,4 @@ jobs:
 
     - name: Run Python automation script
       run: |
-        python3 "uazano_71canali_auto_drive.py"
+        python3 "uaznao_78_fix.py"
