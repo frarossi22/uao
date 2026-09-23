@@ -22,7 +22,7 @@ HEADERS = {
 }
 
 # ============================================================
-# ORDINE E MAPPA COMPLETA DEI 99 CANALI
+# ORDINE E MAPPA COMPLETA DEI CANALI
 # ============================================================
 GROUP_ORDER = [
     "Rai", 
@@ -104,14 +104,14 @@ CHANNEL_MAP = {
     "daznch/player_event.php?event=9": {"name": "DAZN 9", "group": "DAZN CH"},
     "daznch/player_event.php?event=10": {"name": "DAZN 10", "group": "DAZN CH"},
 
-    # DAZN PT (5)
+    # DAZN PT (5) [Aggiornati con i directUrl del lettore HTML]
     "dazn1_pt": {"name": "DAZN 1 PT", "group": "DAZN PT", "directUrl": "https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$521/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=MzliY2JjOTQxOGFhNGQ2MmI5NmI2YTNlYWUyZjZkZjA6YThmOTY4YjZhOGVkN2JmYjE3YmY3ODdiNmM5MzBjN2U="},
     "dazn2_pt": {"name": "DAZN 2 PT", "group": "DAZN PT", "directUrl": "https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$522/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=MzgwNWNkNTMzYzEzNDFhNzkzNGQxMzYyOWViN2EzNGU6MjU0MjU2NDkyOGNiOGUzZmU0NTk1YWI4ZGNmZDZlNzc="},
     "dazn3_pt": {"name": "DAZN 3 PT", "group": "DAZN PT", "directUrl": "https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$523/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=NzIyNGYyYTZhMTRhNGQ4ODg3NGQxMGRkOTUzYzg4ZGM6OTcxOWVhMjM4ZDNkZTY2ZWIwNzNjZTg0MjgxNGY0NjQ="},
     "dazn4_pt": {"name": "DAZN 4 PT", "group": "DAZN PT", "directUrl": "https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$524/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=MGI2ZTVmZTViMWQxNDBiMDkyZTIyY2M2NjIwODgyNzY6NmJkZDc2YWRiYzViYjI1MDg5OTgzYjI1MDBkZGU3Y2E="},
     "dazn5_pt": {"name": "DAZN 5 PT", "group": "DAZN PT", "directUrl": "https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$525/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=ZDkzMWQ2NzE4ODQxNDVkZmIzOTJiZTBjYWRlNTA4OGM6YmVlZTM5NTZiNzY5YzM5ZjAwZmEzY2U4NGEyZWZhYmE="},
 
-    # Sportv PT (7)
+    # Sportv PT (7) [Aggiornati con i directUrl del lettore HTML]
     "sportv1_pt": {"name": "Sport TV 1 [PT]", "group": "Sportv PT", "directUrl": "https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$151/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=YzJiYWM5YzM5M2YxNDVmYzkyNGNlNTcyY2E5OTE1NmY6NDVmNjYzN2VlZjgwZWFmYmU3ZTYzMDIzMTEzOWRmNWI="},
     "sportv2_pt": {"name": "Sport TV 2 [PT]", "group": "Sportv PT", "directUrl": "https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$152/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=MGQyOGVkZjRmMDU1NDA5YmIxMmQ2ZDAyNjBiMjZiNmI6YmY2OWY4YTMzYzM5YzMxZjVmZjA2YWI1MjAxMmUyN2M="},
     "sportv3_pt": {"name": "Sport TV 3 [PT]", "group": "Sportv PT", "directUrl": "https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$153/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=MjA2ZmVjNTZmNWI3NDFlNWFhODExMjQ4OTVkOWI1OTI6MjdiOTE1MDVhYTY5MjZmNTkxOTljODI4YmMyNzc2N2I="},
@@ -120,11 +120,11 @@ CHANNEL_MAP = {
     "sportv6_pt": {"name": "Sport TV 6 [PT]", "group": "Sportv PT", "directUrl": "https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$566/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=ZDMxOWFhYjAyYTgzNDIyNDhjY2ViMGZkZjA2MGJjNTQ6YjM2NjY4YTgzNmIxNTA1NWJlMWYwNGI4ZDhhOGNjNzA="},
     "sportv7_pt": {"name": "Sport TV 7 [PT]", "group": "Sportv PT", "directUrl": "https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$597/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=NDAwOTU3YWM2OGQ1NDlmYmJiYmM2NjhkM2E5ZWI3MDk6M2RkMzUxZjE4NzViMGRkNDBhNGUzOTJmMDZhMjliMjk="},
 
-    # Premier Sport (2)
+    # Premier Sport (2) [Aggiornati con i directUrl del lettore HTML]
     "premiersports1_uk": {"name": "Premier Sports 1 [UK]", "group": "Premier Sport", "directUrl": "https://a151aivottlinear-a.akamaihd.net/OTTB/sin-nitro/live/dash/enc/m6sqanvm2m/out/v1/f6beb46c6e9a4132ad739f3ca27df6aa/cenc.mpd?ck=MTQ0NGY0MjM1NTI5ZjE4M2YwYTVhNDg2YmVmZTljZGI6ZTVlM2ZlYzY3YTFiYjM0NzJhMjA4OWM4YTBhMjU1N2Y="},
     "premiersports2_uk": {"name": "Premier Sports 2 [UK]", "group": "Premier Sport", "directUrl": "https://a151aivottlinear-a.akamaihd.net/OTTB/sin-nitro/live/dash/enc/bcj3iscpd6/out/v1/fcd137b391214f7cb99dd4d7be90ca87/cenc.mpd?ck=MWE1ZGY1MzYwOWViYzk4NTc4OThjNDkwZjQ3MjQ5MTg6NzdmNjI5ODBkNTgyZWM1NDEyODA3OTZhY2Y4YjJkMTk="},
 
-    # ESPN (7)
+    # ESPN (7) [Aggiornati con i directUrl del lettore HTML]
     "espn1_sur": {"name": "ESPN [SUR]", "group": "ESPN", "directUrl": "https://vcdn.mn10.entel.bo/Content/DASH/Live/Channel(8757cb0a-3584-40cd-901e-8937c7deba83)/master.mpd?ck=Y2IwMDRmYjEwMGJkOTJmMjM3OTM1NjI4OTFlMzIzNmI6YjNlNGU3NGFlMjA4MGIxMzdlNjhiYmQwZWY4YTdlMDU="},
     "espn2_sur": {"name": "ESPN 2 [SUR]", "group": "ESPN", "directUrl": "https://vcdn.mn10.entel.bo/Content/DASH/Live/Channel(62567d5c-295c-4ffd-ac7e-c9749e874884)/master.mpd?ck=YTgxZWU0YTY5NGZlY2Q2YWE4YTY4MmU1MDI0YjMxM2M6NmQxNTU2OGUxZGFiNTllNzIwMmFlMTJlNzE1MDUxODU="},
     "espn3_sur": {"name": "ESPN 3 [SUR]", "group": "ESPN", "directUrl": "https://vcdn.mn10.entel.bo/Content/DASH/Live/Channel(a38d1401-ee01-4802-812a-7cb460c9832c)/master.mpd?ck=OGE2MGQ3ODg5ZmYxMjZlZTE4OTUzMzVlOTIyNTRmOGU6ZGUxYjBjZTE5ZmE4MDRhMWM0NzNlYjhlZjJkNWNmNmQ="},
@@ -165,7 +165,7 @@ CHANNEL_MAP = {
 }
 
 # ============================================================
-# FUNZIONI
+# FUNZIONI DI SUPPORTO PER ESTRAZIONE E CLEARKING
 # ============================================================
 
 def log(msg):
@@ -200,9 +200,25 @@ def refresh_access_token():
 def decode_ck(ck):
     try:
         pad = "=" * (4 - len(ck) % 4) if len(ck) % 4 else ""
-        return base64.b64decode(ck + pad).decode("utf-8")
+        decoded = base64.b64decode(ck + pad).decode("utf-8")
+        match = re.search(r"([0-9a-fA-F]+):([0-9a-fA-F]+)", decoded)
+        if match:
+            return f"{match.group(1).lower()}:{match.group(2).lower()}"
     except Exception:
-        return None
+        pass
+    return None
+
+def extract_ck_from_url(raw_url):
+    try:
+        if "ck=" in raw_url:
+            parts = raw_url.split("ck=")
+            base_url = parts[0].rstrip("&?")
+            ck_val = parts[1].split("&")[0]
+            clear_key = decode_ck(ck_val)
+            return base_url, clear_key
+    except Exception:
+        pass
+    return raw_url, None
 
 def parse_clear_keys(raw_keys):
     if not raw_keys:
@@ -253,11 +269,14 @@ def scrape_channels():
 
             if "directUrl" in meta:
                 log(f"[{i}/{total}] 📡 {name} (Diretto)...")
-                channels.append({
-                    "name": name,
-                    "group": group,
-                    "url": meta["directUrl"]
-                })
+                raw_url = meta["directUrl"]
+                clean_url, clear_key = extract_ck_from_url(raw_url)
+                
+                ch_dict = {"name": name, "group": group, "url": clean_url}
+                if clear_key:
+                    ch_dict["clear_key"] = clear_key
+                
+                channels.append(ch_dict)
                 log("  ✅ OK")
                 continue
 
@@ -279,16 +298,12 @@ def scrape_channels():
                 if match:
                     raw_stream = match.group(1).replace(r"\/", "/")
                     
-                    # Controllo se l'url è vuoto (canale spento/in attesa)
                     if not raw_stream.strip():
                         log(f"  ⏳ {name} - In attesa dell'url")
                         continue
 
-                    clean_url = raw_stream.split("?")[0] if "?" in raw_stream and not ".mpd?" in raw_stream else raw_stream
+                    clean_url, clear_key = extract_ck_from_url(raw_stream)
                     
-                    ck_match = re.search(r"ck=([^&]+)", raw_stream)
-                    clear_key = decode_ck(ck_match.group(1)) if ck_match else None
-
                     kid, key = None, None
                     keys_match = re.search(r'STREAM_CLEAR_KEYS\s*=\s*(.+?);', html, re.IGNORECASE | re.DOTALL)
                     if keys_match:
@@ -297,9 +312,8 @@ def scrape_channels():
                     ch_dict = {"name": name, "group": group, "url": clean_url}
                     if clear_key:
                         ch_dict["clear_key"] = clear_key
-                    if kid and key:
-                        ch_dict["kid"] = kid
-                        ch_dict["key"] = key
+                    elif kid and key:
+                        ch_dict["clear_key"] = f"{kid}:{key}"
 
                     channels.append(ch_dict)
                     log("  ✅ OK")
@@ -309,7 +323,7 @@ def scrape_channels():
                 log(f"  ❌ HTTP {res.status_code}")
         except Exception as e:
             log(f"  ❌ Errore: {e}")
-        time.sleep(0.2)
+        time.sleep(0.1)
 
     return channels
 
@@ -325,9 +339,6 @@ def generate_m3u(all_channels_collected):
                 if "clear_key" in ch and ch["clear_key"]:
                     content += "#KODIPROP:inputstream.adaptive.license_type=clearkey\n"
                     content += f'#KODIPROP:inputstream.adaptive.license_key={ch["clear_key"]}\n'
-                elif "kid" in ch and "key" in ch:
-                    content += "#KODIPROP:inputstream.adaptive.license_type=clearkey\n"
-                    content += f'#KODIPROP:inputstream.adaptive.license_key={ch["kid"]}:{ch["key"]}\n'
 
                 url = ch.get("url")
                 if url:
@@ -362,7 +373,7 @@ def upload_to_drive(content):
 
 def main():
     print("=" * 50)
-    print("📺 Uaznao Scraper - 99 Canali Ordinati per Gruppi")
+    print("📺 Uaznao Scraper - Canali Aggiornati")
     print("=" * 50)
     log("Avvio...")
 
@@ -372,7 +383,7 @@ def main():
         log("\n❌ Nessun canale trovato!")
         sys.exit(1)
 
-    log(f"\n📝 Generazione file m3u con {len(all_collected)} canali attivi...")
+    log(f"\n📝 Generazione file m3u con {len(all_collected)} canali...")
     m3u_content = generate_m3u(all_collected)
 
     with open("skympd.m3u", "w", encoding="utf-8") as f:
