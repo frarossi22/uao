@@ -1,4 +1,4 @@
-name: Uaznao 99 fix
+name: Uaznao 110 fix
 
 on:
   schedule:
@@ -34,4 +34,4 @@ jobs:
 
     - name: Run Python automation script
       run: |
-        python3 "uaznao_99_fix.py"
+        python3 "uaznao_110_fix.py"
