@@ -2,14 +2,11 @@ name: Uaznao 110 fix
 
 on:
   schedule:
-    # 1° avvio: 03:00 UTC = 05:00 Italia (ora legale) / 04:00 Italia (ora solare)
+    # 1° avvio: 01:00 UTC = 03:00 Italia (ora legale) / 02:00 Italia (ora solare)
+    - cron: '0 1 * * *'
+
+    # 2° avvio: 03:00 UTC = 05:00 Italia (ora legale) / 04:00 Italia (ora solare)
     - cron: '0 3 * * *'
-
-    # 2° avvio: 07:00 UTC = 09:00 Italia (ora legale) / 08:00 Italia (ora solare)
-    - cron: '0 7 * * *'
-
-    # 3° avvio: 13:00 UTC = 15:00 Italia (ora legale) / 14:00 Italia (ora solare)
-    - cron: '0 13 * * *'
 
   workflow_dispatch:
 
@@ -18,20 +15,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install requests selenium
-        pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests selenium
+          pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
 
-    - name: Run Python automation script
-      run: |
-        python3 "uaznao_110_fix.py"
+      - name: Run Python automation script
+        run: |
+          python3 "uaznao_110_fix.py"
