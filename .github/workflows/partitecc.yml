@@ -2,7 +2,8 @@ name: Partite.cc Scraper ITALY
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    # Esegue ogni 10 minuti
+    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -21,6 +22,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'
 
       - name: Install Python dependencies
         working-directory: partite.cc
@@ -28,21 +30,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install playwright google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
 
-      - name: Install Playwright Chromium
+      - name: Install Playwright Chromium with Dependencies
         working-directory: partite.cc
         run: |
-          playwright install chromium
-          playwright install-deps chromium
+          playwright install chromium --with-deps
 
-      - name: Create client_secret.json from secrets
+      - name: Create credentials files securely
         working-directory: partite.cc
+        env:
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET_JSON }}
+          TOKEN_SECRET: ${{ secrets.TOKEN_JSON }}
         run: |
-          echo '${{ secrets.CLIENT_SECRET_JSON }}' > client_secret.json
-
-      - name: Create token.json from secrets
-        working-directory: partite.cc
-        run: |
-          echo '${{ secrets.TOKEN_JSON }}' > token.json
+          echo "$CLIENT_SECRET" > client_secret.json
+          echo "$TOKEN_SECRET" > token.json
 
       - name: Run scraper
         working-directory: partite.cc
