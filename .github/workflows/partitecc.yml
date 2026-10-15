@@ -2,8 +2,7 @@ name: Partite.cc Scraper ITALY
 
 on:
   schedule:
-    # Esegue ogni 10 minuti
-    - cron: '*/10 * * * *'
+    - cron: '0 0,6,12,18 * * *'
   workflow_dispatch:
 
 permissions:
@@ -12,7 +11,7 @@ permissions:
 jobs:
   run-script:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 380
 
     steps:
       - name: Checkout repository
@@ -22,7 +21,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
 
       - name: Install Python dependencies
         working-directory: partite.cc
@@ -30,20 +28,35 @@ jobs:
           python -m pip install --upgrade pip
           pip install playwright google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
 
-      - name: Install Playwright Chromium with Dependencies
+      - name: Install Playwright Chromium
         working-directory: partite.cc
         run: |
-          playwright install chromium --with-deps
+          playwright install chromium
+          playwright install-deps chromium
 
-      - name: Create credentials files securely
+      - name: Create client_secret.json from secrets
         working-directory: partite.cc
-        env:
-          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET_JSON }}
-          TOKEN_SECRET: ${{ secrets.TOKEN_JSON }}
         run: |
-          echo "$CLIENT_SECRET" > client_secret.json
-          echo "$TOKEN_SECRET" > token.json
+          echo '${{ secrets.CLIENT_SECRET_JSON }}' > client_secret.json
 
-      - name: Run scraper
+      - name: Create token.json from secrets
         working-directory: partite.cc
-        run: python partite.cc_auto.py
+        run: |
+          echo '${{ secrets.TOKEN_JSON }}' > token.json
+
+      - name: Run scraper in loop (36 cycles x 10 min = 6 hours)
+        working-directory: partite.cc
+        run: |
+          for i in $(seq 1 36); do
+            echo "═══════════════════════════════════════"
+            echo "  Ciclo $i di 36 - $(date -u +%H:%M:%S) UTC"
+            echo "═══════════════════════════════════════"
+            python partite.cc_auto.py || echo "Ciclo $i fallito, continuo..."
+            if [ $i -lt 36 ]; then
+              echo "Attendo 10 minuti..."
+              sleep 600
+            fi
+          done
+          echo "═══════════════════════════════════════"
+          echo "  Completati 36 cicli (6 ore), lavoro finito"
+          echo "═══════════════════════════════════════"
