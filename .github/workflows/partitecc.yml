@@ -2,39 +2,48 @@ name: Partite.cc Scraper ITALY
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  scrape:
+  run-script:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         working-directory: partite.cc
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install playwright google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
+
+      - name: Install Playwright Chromium
+        working-directory: partite.cc
+        run: |
           playwright install chromium
           playwright install-deps chromium
 
-      - name: Ricrea client_secret.json
+      - name: Create client_secret.json from secrets
         working-directory: partite.cc
-        run: echo '${{ secrets.CLIENT_SECRET_JSON }}' > client_secret.json
+        run: |
+          echo '${{ secrets.CLIENT_SECRET_JSON }}' > client_secret.json
 
-      - name: Ricrea token.json
+      - name: Create token.json from secrets
         working-directory: partite.cc
-        run: echo '${{ secrets.TOKEN_JSON }}' > token.json
+        run: |
+          echo '${{ secrets.TOKEN_JSON }}' > token.json
 
-      - name: Esegui scraper
+      - name: Run scraper
         working-directory: partite.cc
         run: python partite.cc_auto.py
