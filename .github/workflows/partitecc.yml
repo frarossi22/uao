@@ -44,19 +44,19 @@ jobs:
         run: |
           echo '${{ secrets.TOKEN_JSON }}' > token.json
 
-      - name: Run scraper in loop (36 cycles x 10 min = 6 hours)
+      - name: Run scraper in loop (51 cycles x 7 min = 6 hours)
         working-directory: partite.cc
         run: |
-          for i in $(seq 1 36); do
+          for i in $(seq 1 51); do
             echo "═══════════════════════════════════════"
-            echo "  Ciclo $i di 36 - $(date -u +%H:%M:%S) UTC"
+            echo "  Ciclo $i di 51 - $(date -u +%H:%M:%S) UTC"
             echo "═══════════════════════════════════════"
             python partite.cc_auto.py || echo "Ciclo $i fallito, continuo..."
-            if [ $i -lt 36 ]; then
-              echo "Attendo 10 minuti..."
-              sleep 600
+            if [ $i -lt 51 ]; then
+              echo "Attendo 7 minuti..."
+              sleep 420
             fi
           done
           echo "═══════════════════════════════════════"
-          echo "  Completati 36 cicli (6 ore), lavoro finito"
+          echo "  Completati 51 cicli (6 ore), lavoro finito"
           echo "═══════════════════════════════════════"
