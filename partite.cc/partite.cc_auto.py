@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import os
 import re
 import socket
@@ -6,6 +7,10 @@ import sys
 import traceback
 from datetime import datetime
 from playwright.async_api import async_playwright
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 
 # ═══════════════════════════════════════════════════════════════
 #  CONFIGURAZIONE
@@ -13,11 +18,11 @@ from playwright.async_api import async_playwright
 EMAIL        = 'erciciola@yahoo.it'
 PASSWORD     = 'franchino'
 
-# ── NOMI FILE OUTPUT ──
-OUTPUT_ITALY = 'partite.cc_italy.m3u'
-OUTPUT_FULL  = 'partite.cc_full.m3u'
+OUTPUT_FILE  = 'partite.cc_italy.m3u'
 
-# ── VELOCITÀ ──
+DRIVE_FILE_ID = '1H1dE3rnPqyVAVxgpm9qJ7mESqGXkYriC'
+TOKEN_FILE    = 'token.json'
+
 PARALLEL     = 6
 WAIT_SEC     = 8
 HARD_TIMEOUT = 15
@@ -25,7 +30,6 @@ DELAY_SEC    = 0.2
 PAGE_TIMEOUT = 12000
 HEADLESS     = True
 
-# ── UA COMPLETO ──
 UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
       'AppleWebKit/537.36 (KHTML, like Gecko) '
       'Chrome/120.0.0.0 Safari/537.36')
@@ -33,37 +37,8 @@ UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
 HOST = 'www.partite.cc'
 BASE = f'https://{HOST}'
 
-# ── FILTRO ITALIA ──
 ITALY_PATTERN = re.compile(r'-(ita|italia)(?:[/?#]|$)', re.IGNORECASE)
 # ═══════════════════════════════════════════════════════════════
-
-
-# ═══════════════════════════════════════════════════════════════
-#  MENU
-# ═══════════════════════════════════════════════════════════════
-def show_menu():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print()
-    print("═══════════════════════════════")
-    print("  A  Genera playlist Partite.cc ITALY")
-    print("  B  Genera playlist Partite.cc FULL")
-    print("  C  Esci")
-    print("═══════════════════════════════")
-
-    while True:
-        scelta = input("Scelta: ").strip().lower()
-        if scelta in ('a', 'b', 'c'):
-            return scelta
-        print("Inserisci A, B o C.")
-
-
-def ask_return_to_menu():
-    print()
-    try:
-        risposta = input("Premi INVIO per uscire, oppure 's' per tornare al menu: ").strip().lower()
-    except EOFError:
-        return False
-    return risposta == 's'
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -144,7 +119,7 @@ def fix_url_region(url):
 
 
 # ═══════════════════════════════════════════════════════════════
-#  LOGIN
+#  SCRAPER
 # ═══════════════════════════════════════════════════════════════
 async def do_login(context):
     page = await context.new_page()
@@ -185,9 +160,6 @@ async def do_login(context):
         await page.close()
 
 
-# ═══════════════════════════════════════════════════════════════
-#  ELENCO CANALI
-# ═══════════════════════════════════════════════════════════════
 async def get_channels(context):
     page = await context.new_page()
     try:
@@ -207,9 +179,6 @@ async def get_channels(context):
         await page.close()
 
 
-# ═══════════════════════════════════════════════════════════════
-#  ESTRAZIONE
-# ═══════════════════════════════════════════════════════════════
 async def extract_one(context, ch, results, lock, progress):
     name = ch['name']
     url  = ch['url']
@@ -263,18 +232,18 @@ async def extract_one(context, ch, results, lock, progress):
                 results.append((name, fixed))
                 progress['ok'] += 1
                 n = progress['ok'] + progress['ko']
-            print(f"  ✅ [{n:02d}/{progress['total']}] {name}")
+            print(f"  OK  [{n:02d}/{progress['total']}] {name}")
         else:
             async with lock:
                 progress['ko'] += 1
                 n = progress['ok'] + progress['ko']
-            print(f"  ❌ [{n:02d}/{progress['total']}] {name}")
+            print(f"  XX  [{n:02d}/{progress['total']}] {name}")
 
     except Exception as e:
         async with lock:
             progress['ko'] += 1
             n = progress['ok'] + progress['ko']
-        print(f"  ⚠️  [{n:02d}/{progress['total']}] {name} ({type(e).__name__})")
+        print(f"  !!  [{n:02d}/{progress['total']}] {name} ({type(e).__name__})")
     finally:
         try:
             await page.close()
@@ -292,16 +261,10 @@ async def extract_with_timeout(context, ch, results, lock, progress):
         async with lock:
             progress['ko'] += 1
             n = progress['ok'] + progress['ko']
-        print(f"  ⏱️  [{n:02d}/{progress['total']}] {ch['name']} (timeout)")
+        print(f"  T!  [{n:02d}/{progress['total']}] {ch['name']} (timeout)")
 
 
-# ═══════════════════════════════════════════════════════════════
-#  RUN PLAYLIST
-# ═══════════════════════════════════════════════════════════════
-async def run_playlist(mode):
-    """mode = 'italy' | 'full'"""
-    output_file = OUTPUT_ITALY if mode == 'italy' else OUTPUT_FULL
-
+async def run_scraper():
     results  = []
     lock     = asyncio.Lock()
     progress = {'ok': 0, 'ko': 0, 'total': 0}
@@ -322,25 +285,18 @@ async def run_playlist(mode):
         )
 
         ok = await do_login(context)
-        print(f"{'✅ Login OK' if ok else '⚠️  Login dubbio'}")
+        print(f"{'Login OK' if ok else 'Login DUBBIO'}")
 
         channels_all = await get_channels(context)
-
-        if mode == 'italy':
-            channels = [c for c in channels_all if ITALY_PATTERN.search(c['url'])]
-            print(f"🇮🇹 Canali italiani: {len(channels)} / {len(channels_all)} totali")
-        else:
-            channels = channels_all
-            print(f"🌍 Canali totali: {len(channels)}")
+        channels = [c for c in channels_all if ITALY_PATTERN.search(c['url'])]
+        print(f"Canali italiani: {len(channels)} / {len(channels_all)} totali")
 
         progress['total'] = len(channels)
 
         if not channels:
-            print("❌ Nessun canale da elaborare.")
+            print("Nessun canale da elaborare.")
             await browser.close()
-            return
-
-        print(f"⚡ {PARALLEL} in parallelo, wait {WAIT_SEC}s, timeout {HARD_TIMEOUT}s\n")
+            return []
 
         sem = asyncio.Semaphore(PARALLEL)
 
@@ -350,65 +306,108 @@ async def run_playlist(mode):
                 if DELAY_SEC > 0:
                     await asyncio.sleep(DELAY_SEC)
 
-        t0 = datetime.now()
         await asyncio.gather(*[worker(ch) for ch in channels])
-        elapsed = (datetime.now() - t0).total_seconds()
         await browser.close()
 
-    # ── SALVATAGGIO ──
-    with open(output_file, 'w', encoding='utf-8') as f:
+    return results
+
+
+# ═══════════════════════════════════════════════════════════════
+#  SALVATAGGIO M3U
+# ═══════════════════════════════════════════════════════════════
+def save_m3u(results, path):
+    with open(path, 'w', encoding='utf-8') as f:
         f.write('#EXTM3U\n')
         for name, url in results:
             f.write(f'#EXTINF:-1 group-title="Partitecc", {name}\n')
             f.write(f'#EXTVLCOPT:http-user-agent={UA}\n')
             f.write(f'{url}\n')
 
-    print(f"\n{'═'*55}")
-    print(f"✨ Salvati {len(results)}/{progress['total']} stream in {elapsed:.1f}s")
-    print(f"   OK: {progress['ok']}   KO: {progress['ko']}")
-    print(f"   File: {os.path.abspath(output_file)}")
-    print(f"{'═'*55}")
+
+def file_hash(path):
+    if not os.path.exists(path):
+        return None
+    h = hashlib.sha256()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(8192), b''):
+            h.update(chunk)
+    return h.hexdigest()
 
 
-def safe_run(mode):
+# ═══════════════════════════════════════════════════════════════
+#  GOOGLE DRIVE
+# ═══════════════════════════════════════════════════════════════
+def get_drive_service():
+    creds = None
+    if os.path.exists(TOKEN_FILE):
+        creds = Credentials.from_authorized_user_file(TOKEN_FILE)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+            with open(TOKEN_FILE, 'w') as f:
+                f.write(creds.to_json())
+    return build('drive', 'v3', credentials=creds)
+
+
+def drive_file_hash(service, file_id):
     try:
-        asyncio.run(run_playlist(mode))
-    except Exception:
-        print("\n❌ ECCEZIONE FATALE:\n")
-        print(traceback.format_exc())
+        request = service.files().get_media(fileId=file_id)
+        content = request.execute()
+        return hashlib.sha256(content).hexdigest()
+    except Exception as e:
+        print(f"  (impossibile leggere da Drive: {e})")
+        return None
+
+
+def upload_to_drive(service, file_id, local_path):
+    media = MediaFileUpload(local_path, mimetype='audio/x-mpegurl', resumable=False)
+    service.files().update(fileId=file_id, media_body=media).execute()
 
 
 # ═══════════════════════════════════════════════════════════════
-#  AVVIO CON MENU IN LOOP
+#  MAIN (senza menu, solo ITALY)
 # ═══════════════════════════════════════════════════════════════
-def main():
+async def main():
+    print("=" * 50)
+    print(f" Partite.cc scraper - ITALY - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("=" * 50)
+
     if not RESOLVED_IPS:
-        print(f"⚠️  Nessun IP IPv4 valido trovato per {HOST}")
-        print("    Controlla la connessione e riprova.")
+        print("Nessun IP IPv4 valido trovato.")
         return
 
-    while True:
-        scelta = show_menu()
+    # ── 1. Scraper ──
+    results = await run_scraper()
 
-        if scelta == 'a':
-            print("\n🇮🇹  Generazione playlist ITALY...\n")
-            safe_run('italy')
-        elif scelta == 'b':
-            print("\n🌍  Generazione playlist FULL...\n")
-            safe_run('full')
-        else:  # 'c'
-            print("\n👋  Arrivederci!")
-            return
+    if not results:
+        print("Nessun risultato. Stop.")
+        return
 
-        if not ask_return_to_menu():
-            print("\n👋  Arrivederci!")
-            return
+    # ── 2. Salva M3U locale ──
+    save_m3u(results, OUTPUT_FILE)
+    local_hash = file_hash(OUTPUT_FILE)
+    print(f"\nFile salvato: {OUTPUT_FILE} ({len(results)} canali)")
+    print(f"Hash locale:  {local_hash[:16]}...")
+
+    # ── 3. Confronta con la versione su Drive ──
+    print("\nControllo se il file su Drive e' cambiato...")
+    service = get_drive_service()
+    remote_hash = drive_file_hash(service, DRIVE_FILE_ID)
+
+    if remote_hash and remote_hash == local_hash:
+        print("Contenuto IDENTICO. Nessun upload necessario.")
+        return
+
+    print("Contenuto DIVERSO (o file assente). Carico su Drive...")
+
+    # ── 4. Upload ──
+    upload_to_drive(service, DRIVE_FILE_ID, OUTPUT_FILE)
+    print("Upload completato!")
 
 
 if __name__ == '__main__':
     try:
-        main()
-    except KeyboardInterrupt:
-        print("\n\n⚠️  Interrotto dall'utente.")
+        asyncio.run(main())
     except Exception:
+        print("\nERRORE FATALE:\n")
         print(traceback.format_exc())
