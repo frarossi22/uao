@@ -2,7 +2,8 @@ name: Partite.cc Scraper ITALY
 
 on:
   schedule:
-    - cron: '0 0,6,12,18 * * *'
+    - cron: '0 8 * * *'    # 08:00 UTC = 10:00 ora italiana
+    - cron: '0 16 * * *'   # 16:00 UTC = 18:00 ora italiana
   workflow_dispatch:
 
 permissions:
@@ -11,7 +12,7 @@ permissions:
 jobs:
   run-script:
     runs-on: ubuntu-latest
-    timeout-minutes: 380
+    timeout-minutes: 500
 
     steps:
       - name: Checkout repository
@@ -44,19 +45,19 @@ jobs:
         run: |
           echo '${{ secrets.TOKEN_JSON }}' > token.json
 
-      - name: Run scraper in loop (120 cycles x 3 min = 6 hours)
+      - name: Run scraper in loop (8 hours)
         working-directory: partite.cc
         run: |
-          for i in $(seq 1 120); do
+          END_TIME=$(($(date +%s) + 8*3600))
+          i=0
+          while [ $(date +%s) -lt $END_TIME ]; do
+            i=$((i+1))
             echo "═══════════════════════════════════════"
-            echo "  Ciclo $i di 120 - $(date -u +%H:%M:%S) UTC"
+            echo "  Ciclo $i - $(date -u +%H:%M:%S) UTC"
             echo "═══════════════════════════════════════"
             python partite.cc_auto.py || echo "Ciclo $i fallito, continuo..."
-            if [ $i -lt 120 ]; then
-              echo "Attendo 3 minuti..."
-              sleep 180
-            fi
+            sleep 180
           done
           echo "═══════════════════════════════════════"
-          echo "  Completati 120 cicli (6 ore), lavoro finito"
+          echo "  Completate 8 ore, lavoro finito"
           echo "═══════════════════════════════════════"
