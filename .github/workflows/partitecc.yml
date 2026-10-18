@@ -2,10 +2,10 @@ name: Partite.cc Scraper ITALY
 
 on:
   schedule:
-    - cron: '0 0 * * *'    # 00:00 UTC
-    - cron: '0 6 * * *'    # 06:00 UTC
-    - cron: '0 12 * * *'   # 12:00 UTC
-    - cron: '0 18 * * *'   # 18:00 UTC
+    - cron: '0 8 * * *'    # 08:00 UTC = 10:00 IT
+    - cron: '0 12 * * *'   # 12:00 UTC = 14:00 IT
+    - cron: '0 16 * * *'   # 16:00 UTC = 18:00 IT
+    - cron: '0 20 * * *'   # 20:00 UTC = 22:00 IT
   workflow_dispatch:
 
 permissions:
@@ -14,7 +14,7 @@ permissions:
 jobs:
   run-script:
     runs-on: ubuntu-latest
-    timeout-minutes: 400
+    timeout-minutes: 260
 
     steps:
       - name: Checkout repository
@@ -47,11 +47,11 @@ jobs:
         run: |
           echo '${{ secrets.TOKEN_JSON }}' > token.json
 
-      - name: Run scraper in loop (5h45m)
+      - name: Run scraper in loop (3h30m)
         working-directory: partite.cc
         run: |
-          # 5 ore e 45 min = 20700 secondi (GitHub taglia a 6h)
-          END_TIME=$(($(date +%s) + 20700))
+          # 3h30m = 12600 secondi
+          END_TIME=$(($(date +%s) + 12600))
           i=0
           while [ $(date +%s) -lt $END_TIME ]; do
             i=$((i+1))
@@ -62,5 +62,5 @@ jobs:
             sleep 180
           done
           echo "═══════════════════════════════════════"
-          echo "  Completate 5h45m, prossimo job in arrivo"
+          echo "  Completate 3h30m, prossimo job tra poco"
           echo "═══════════════════════════════════════"
