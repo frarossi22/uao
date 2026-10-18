@@ -1,11 +1,6 @@
 name: Partite.cc Scraper ITALY
 
 on:
-  schedule:
-    - cron: '0 8 * * *'    # 08:00 UTC = 10:00 IT
-    - cron: '0 12 * * *'   # 12:00 UTC = 14:00 IT
-    - cron: '0 16 * * *'   # 16:00 UTC = 18:00 IT
-    - cron: '0 20 * * *'   # 20:00 UTC = 22:00 IT
   workflow_dispatch:
 
 permissions:
@@ -62,5 +57,5 @@ jobs:
             sleep 180
           done
           echo "═══════════════════════════════════════"
-          echo "  Completate 3h30m, prossimo job tra poco"
+          echo "  Completate 3h30m, prossimo job in arrivo"
           echo "═══════════════════════════════════════"
