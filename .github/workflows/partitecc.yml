@@ -9,7 +9,7 @@ permissions:
 jobs:
   run-script:
     runs-on: ubuntu-latest
-    timeout-minutes: 260
+    timeout-minutes: 300
 
     steps:
       - name: Checkout repository
@@ -42,11 +42,11 @@ jobs:
         run: |
           echo '${{ secrets.TOKEN_JSON }}' > token.json
 
-      - name: Run scraper in loop (3h30m)
+      - name: Run scraper in loop (4 ore)
         working-directory: partite.cc
         run: |
-          # 3h30m = 12600 secondi
-          END_TIME=$(($(date +%s) + 12600))
+          # 4 ore = 14400 secondi
+          END_TIME=$(($(date +%s) + 14400))
           i=0
           while [ $(date +%s) -lt $END_TIME ]; do
             i=$((i+1))
@@ -57,5 +57,5 @@ jobs:
             sleep 180
           done
           echo "═══════════════════════════════════════"
-          echo "  Completate 3h30m, prossimo job in arrivo"
+          echo "  Completate 4 ore, prossimo job in arrivo"
           echo "═══════════════════════════════════════"
