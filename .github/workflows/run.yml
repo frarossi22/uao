@@ -1,13 +1,6 @@
 name: Uaznao 114 fix
 
 on:
-  schedule:
-    # 1° avvio: 01:00 UTC = 03:00 Italia (ora legale) / 02:00 Italia (ora solare)
-    - cron: '0 1 * * *'
-
-    # 2° avvio: 03:00 UTC = 05:00 Italia (ora legale) / 04:00 Italia (ora solare)
-    - cron: '0 3 * * *'
-
   workflow_dispatch:
 
 jobs:
