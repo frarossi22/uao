@@ -1,0 +1,6 @@
+
+Privacy Policy
+
+Questa applicazione è uno script personale.
+Non raccoglie dati degli utenti.
+Accede solo al Google Drive dell'autore per leggere e scrivere file M3U.
