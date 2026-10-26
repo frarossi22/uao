@@ -57,9 +57,8 @@ ACCESS_TOKEN = ""
 # ============================================================
 GROUP_ORDER = [
     "Rai","Mediaset","RSI","Sky Cinema","Sky Sport","Serie B",
-    "DAZN CH","DAZN PT","Sportv PT","Premier Sport","Sport cz",
-    "ELEVEN SPORT","COMO TV","CBS SPORT","FOX SPORT","GOLD BET",
-    "BluSport","Intrattenimento","HARDCORE"
+    "DAZN CH","CBS Sport","GOLD BET LIVE","FOX SPORT","Premier Sport","Sport cz",
+    "ELEVEN SPORT","COMO TV","BluSport","Intrattenimento","Hardcore"
 ]
 
 # ============================================================
@@ -154,40 +153,26 @@ CHANNEL_MAP = {
     "blusport/player_event.php?event=8":{"name":"Blu Sport 8","group":"BluSport"},
     "blusport/player_event.php?event=9":{"name":"Blu Sport 9","group":"BluSport"},
     "blusport/player_event.php?event=10":{"name":"Blu Sport 10","group":"BluSport"},
-    # ---- DAZN PT ----
-    "dazn1_pt":{"name":"DAZN 1 PT","group":"DAZN PT","directUrl":"https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$521/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=MzliY2JjOTQxOGFhNGQ2MmI5NmI2YTNlYWUyZjZkZjA6YThmOTY4YjZhOGVkN2JmYjE3YmY3ODdiNmM5MzBjN2U="},
-    "dazn2_pt":{"name":"DAZN 2 PT","group":"DAZN PT","directUrl":"https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$522/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=MzgwNWNkNTMzYzEzNDFhNzkzNGQxMzYyOWViN2EzNGU6MjU0MjU2NDkyOGNiOGUzZmU0NTk1YWI4ZGNmZDZlNzc="},
-    "dazn3_pt":{"name":"DAZN 3 PT","group":"DAZN PT","directUrl":"https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$523/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=NzIyNGYyYTZhMTRhNGQ4ODg3NGQxMGRkOTUzYzg4ZGM6OTcxOWVhMjM4ZDNkZTY2ZWIwNzNjZTg0MjgxNGY0NjQ="},
-    "dazn4_pt":{"name":"DAZN 4 PT","group":"DAZN PT","directUrl":"https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$524/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=MGI2ZTVmZTViMWQxNDBiMDkyZTIyY2M2NjIwODgyNzY6NmJkZDc2YWRiYzViYjI1MDg5OTgzYjI1MDBkZGU3Y2E="},
-    "dazn5_pt":{"name":"DAZN 5 PT","group":"DAZN PT","directUrl":"https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$525/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=ZDkzMWQ2NzE4ODQxNDVkZmIzOTJiZTBjYWRlNTA4OGM6YmVlZTM5NTZiNzY5YzM5ZjAwZmEzY2U4NGEyZWZhYmE="},
-    # ---- Sportv PT ----
-    "sportv1_pt":{"name":"Sport TV 1 [PT]","group":"Sportv PT","directUrl":"https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$151/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=YzJiYWM5YzM5M2YxNDVmYzkyNGNlNTcyY2E5OTE1NmY6NDVmNjYzN2VlZjgwZWFmYmU3ZTYzMDIzMTEzOWRmNWI="},
-    "sportv2_pt":{"name":"Sport TV 2 [PT]","group":"Sportv PT","directUrl":"https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$152/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=MGQyOGVkZjRmMDU1NDA5YmIxMmQ2ZDAyNjBiMjZiNmI6YmY2OWY4YTMzYzM5YzMxZjVmZjA2YWI1MjAxMmUyN2M="},
-    "sportv3_pt":{"name":"Sport TV 3 [PT]","group":"Sportv PT","directUrl":"https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$153/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=MjA2ZmVjNTZmNWI3NDFlNWFhODExMjQ4OTVkOWI1OTI6MjdiOTE1MDVhYTY5MjZmNTkxOTljODI4YmMyNzc2N2I="},
-    "sportv4_pt":{"name":"Sport TV 4 [PT]","group":"Sportv PT","directUrl":"https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$10/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=Y2MwYjdhYzMxYjVlNDJmOGJmOTM0Zjk5YWNmNzFhOGE6ZDc2NDI0ZDY0NGEzNjAwNTY1NjdhMjQ4ZDhiODliNmM="},
-    "sportv5_pt":{"name":"Sport TV 5 [PT]","group":"Sportv PT","directUrl":"https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$112/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=ODFjYTQzNGM5MzFhNDAzZTk1MGRmM2Q4MDhjMjRjNDE6MTg1NDgxOTBjZjNjODI5NDA5NmFmOGEyMTQ2ZTMyYTU="},
-    "sportv6_pt":{"name":"Sport TV 6 [PT]","group":"Sportv PT","directUrl":"https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$566/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=ZDMxOWFhYjAyYTgzNDIyNDhjY2ViMGZkZjA2MGJjNTQ6YjM2NjY4YTgzNmIxNTA1NWJlMWYwNGI4ZDhhOGNjNzA="},
-    "sportv7_pt":{"name":"Sport TV 7 [PT]","group":"Sportv PT","directUrl":"https://rr.cdn.vodafone.pt/LIVE/sdash/LIVE$597/index.mpd/Manifest.mpd?start=LIVE&end=END&device=DASH_AVC_HD&ck=NDAwOTU3YWM2OGQ1NDlmYmJiYmM2NjhkM2E5ZWI3MDk6M2RkMzUxZjE4NzViMGRkNDBhNGUzOTJmMDZhMjliMjk="},
     # ---- Premier Sport ----
     "premiersports1_uk":{"name":"Premier Sports 1 [UK]","group":"Premier Sport","directUrl":"https://a151aivottlinear-a.akamaihd.net/OTTB/sin-nitro/live/dash/enc/m6sqanvm2m/out/v1/f6beb46c6e9a4132ad739f3ca27df6aa/cenc.mpd?ck=MTQ0NGY0MjM1NTI5ZjE4M2YwYTVhNDg2YmVmZTljZGI6ZTVlM2ZlYzY3YTFiYjM0NzJhMjA4OWM4YTBhMjU1N2Y="},
     "premiersports2_uk":{"name":"Premier Sports 2 [UK]","group":"Premier Sport","directUrl":"https://a151aivottlinear-a.akamaihd.net/OTTB/sin-nitro/live/dash/enc/bcj3iscpd6/out/v1/fcd137b391214f7cb99dd4d7be90ca87/cenc.mpd?ck=MWE1ZGY1MzYwOWViYzk4NTc4OThjNDkwZjQ3MjQ5MTg6NzdmNjI5ODBkNTgyZWM1NDEyODA3OTZhY2Y4YjJkMTk="},
     # ---- Sport cz (Widevine) ----
     "sport1_cz":{"name":"Sport 1","group":"Sport cz","directUrl":"https://dash3.antik.sk/stream/nvidia_sport_1/playlist_cbcs.mpd","widevineUrl":"https://drm.antik.sk/widevine/key"},
     "sport2_cz":{"name":"Sport 2","group":"Sport cz","directUrl":"https://dash4.antik.sk/stream/nvidia_sport2/playlist_cbcs.mpd","widevineUrl":"https://drm.antik.sk/widevine/key"},
-    # ---- ELEVEN SPORT ----
+    # ---- ELEVEN SPORT (aggiornati: URL + 3 KID:KEY ciascuno) ----
     "eleven4k":{"name":"Eleven Sport 4K","group":"ELEVEN SPORT","directUrl":"https://lb2.pluscdn.pl/ch/1522637/357/dash/b929c9fb/live.mpd","clearKeys":{"ef5e40e00d43450bbeeb40c6849e0309":"614c349de0e08585c7b503568cacd5a1"}},
-    "eleven1":{"name":"Eleven Channel Sport 1","group":"ELEVEN SPORT","directUrl":"https://lb2.pluscdn.pl/ch/1457744/147/dash/4867711b/live.mpd","clearKeys":{"525a9da2120045a6973709dbcd685609":"d8a7578d81ce754755a503ad8ac98ec0"}},
-    "eleven2":{"name":"Eleven Channel Sport 2","group":"ELEVEN SPORT","directUrl":"https://cdn-s-lb2.pluscdn.pl/ch/1457734/144/dash/0be7047a/live.mpd","clearKeys":{"2cd12eaca5c14b30a3280b1a89484809":"e2c14f6cc245c1a5ebbce8c8c704fc6c"}},
-    "eleven3":{"name":"Eleven Channel Sport 3","group":"ELEVEN SPORT","directUrl":"https://lb2.pluscdn.pl/ch/1457736/145/dash/58566515/live.mpd","clearKeys":{"e006dab396714c0b9dd6228255c1b709":"2cdf44e960bbc4d276968012fe659272"}},
-    "eleven4":{"name":"Eleven Channel Sport 4","group":"ELEVEN SPORT","directUrl":"https://cdn-s-lb2.pluscdn.pl/ch/1457740/146/dash/e653c27f/live.mpd","clearKeys":{"3e943ad288964c77917cc654fc60d109":"18cf07106507f411210c4a26d901a9e4"}},
+    "eleven1":{"name":"Eleven Sports 1","group":"ELEVEN SPORT","directUrl":"https://lineartv-cdn.t-mobile.pl/bpk-tv/elevensports1/default/index.mpd","clearKeys":{"4853dbe4c4cf51f3ba95424c6e6f69c7":"39c0346198bc9b1614eb319115afdb84","751db0bb03145084973c6cf9c85fa16e":"6571153c39eed18c29cdc63eb83c553a","fd9b5f8ae64a51edacd4f245ef515287":"c867d24646b170b5c0e0556b56b291d7"}},
+    "eleven2":{"name":"Eleven Sports 2","group":"ELEVEN SPORT","directUrl":"https://lineartv-cdn.t-mobile.pl/bpk-tv/elevensports2/default/index.mpd","clearKeys":{"a118a928ea39552f976c8fad437f71ad":"f58fb7a53ee86de9d0b9823446ba9756","78f826af752f54ddbc4ad9959ff2a42d":"c1479ffada263000730d627a989e96ab","95c2aefadb7e522c9deeed393207f853":"16e857224e16ab01a3c549212cdbdbb8"}},
+    "eleven3":{"name":"Eleven Sports 3","group":"ELEVEN SPORT","directUrl":"https://lineartv-cdn.t-mobile.pl/bpk-tv/elevensports3/default/index.mpd","clearKeys":{"d895d50a5a0f55758d31f247e6743815":"9f4882e56631edb0da1c7bf1e0fa4904","e3a9d5c27a6d5eac955daf5a1a640c69":"4c2e674f97ff33c5de13032b92e78bc9","e3dd9d531eee578fbd08c87de8ab84d5":"133e5a170236f4ba5930f5ba4213ee03"}},
+    "eleven4":{"name":"Eleven Sports 4","group":"ELEVEN SPORT","directUrl":"https://lineartv-cdn.t-mobile.pl/bpk-tv/elevensports4/default/index.mpd","clearKeys":{"37b0bbf897ad5bd5a3ec19b5a91f54f9":"3e84e6b93e19197d5aea59ef8ad9d270","54a7d8f8dbee564981beb470f22b529b":"a0e341fec141f8733c0805f5480762ba","14e62b5f16385a139e2a1c747b8b1cc4":"0cece074b5f3fabc76fc9ed109b3819d"}},
     # ---- COMO TV ----
     "comotv1":{"name":"Como TV 1","group":"COMO TV","directUrl":"https://comofootball.mocdn.tv/out/v1/ac7a76c678594a03a8e05392a796f125/index_L1.m3u8"},
     "comotv2":{"name":"Como TV 2","group":"COMO TV","directUrl":"https://comofootball.mocdn.tv/out/v1/c10b9e41c1a34a598cb5e9a345b3a325/index_L1.m3u8"},
     "comotv3":{"name":"Como TV 3","group":"COMO TV","directUrl":"https://comofootball.mocdn.tv/out/v1/ffb389a49afc49338e2cc17724a649aa/index_L1.m3u8"},
     "comotv4":{"name":"Como TV 4","group":"COMO TV","directUrl":"https://comofootball.mocdn.tv/out/v1/617c01e7d8c241d2b1152decbfa60339/index_L1.m3u8"},
     "comotv5":{"name":"Como TV 5","group":"COMO TV","directUrl":"https://comofootball.mocdn.tv/out/v1/e8d4fec57cd24447babe9fbe0151007c/index_L1.m3u8"},
-    # ---- CBS SPORT (dopo COMO TV) ----
-    "cbssport":{"name":"CbsSport Mpd","group":"CBS SPORT",
+    # ---- CBS Sport ----
+    "cbssport":{"name":"CbsSport Mpd","group":"CBS Sport",
                 "directUrl":"https://abfjk4haaaaaaaampv6ofhkihi4r6.bia-cf.live.pv-cdn.net/lhr-nitro/live/clients/dash/enc/rbem8rorcw/out/v1/5318821e2c3c44c2a439681b9aa86e9b/cenc.mpd",
                 "clearKeys":{"d9623774ac5c8c351aafe97c5fe70267":"5164e6d05164a2d65fa8fcc962aa4861"}},
     # ---- FOX SPORT ----
@@ -203,17 +188,69 @@ CHANNEL_MAP = {
     "foxsportpremium":{"name":"FOXChannel Sport PREMIUM","group":"FOX SPORT",
                  "directUrl":"https://otte.live.fly.ww.aiv-cdn.net/dub-nitro/live/dash/enc/fdx74zqzhu/out/v1/7d7a8c6981a842b98a683e9fbfe51d17/cenc.mpd",
                  "clearKeys":{"9f327d24c66fbd84e15ab5c9ead7c7a4":"83837185529c0c4048f81386c2d36426"}},
-    # ---- GOLD BET ----
-    "goldbet_serieb":{"name":"GOLD BET LIVE TCD SERIE B","group":"GOLD BET",
+    # ---- GOLD BET LIVE ----
+    "goldbet_serieb":{"name":"GOLD BET LIVE TCD SERIE B","group":"GOLD BET LIVE",
                       "directUrl":"https://dctv.mocdn.tv/out/v1/53b5ed79722b4b23932dd86262242e03/manifest_L1.mpd",
                       "clearKeys":{"11c83f71744e40209ed12b1ce234d055":"83279bd86c8f71656440af1abaf43f0a"}},
     # ---- HARDCORE ----
-    "playboytv":{"name":"PlayboyTV","group":"HARDCORE",
+    # 1) PlayboyTV
+    "playboytv":{"name":"PlayboyTV","group":"Hardcore",
                  "directUrl":"https://simplitv-live.mdn.ors.at/live/eds/playboy_tv/dash/playboy_tv.mpd",
                  "clearKeys":{"9fd578695b3c36899b637afc7f21ac13":"f39b08441d41a7c503b1e445555b033d"}},
-    "desire":{"name":"Desire","group":"HARDCORE",
+    # 2) Desire
+    "desire":{"name":"Desire","group":"Hardcore",
               "directUrl":"https://bpm.tv.delta.nl/dash-cenc/combined/10059/stb.mpd?bk-network=ftth-mobile",
               "clearKeys":{"da77348ad6d9c210977817f87112ea74":"2b2ba7d2ce06d7afb98c49449a5064d5"}},
+    # 3-17) 15 canali Antik con KID:KEY statica condivisa
+    "hc_babes":{"name":"Babes Antik","group":"Hardcore",
+                "directUrl":"https://dash2.antik.sk/stream/hisi_babes/playlist_cbcs.mpd",
+                "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_desire":{"name":"Desire Antik","group":"Hardcore",
+                 "directUrl":"https://dash3.antik.sk/stream/hisi_desire/playlist_cbcs.mpd",
+                 "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_true_amateurs":{"name":"True Amateurs Antik","group":"Hardcore",
+                        "directUrl":"https://dash4.antik.sk/stream/hisi_true_amateurs/playlist_cbcs.mpd",
+                        "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_bang_u":{"name":"Bang U Antik","group":"Hardcore",
+                 "directUrl":"https://dash2.antik.sk/stream/hisi_bang_u/playlist_cbcs.mpd",
+                 "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_brazzers_eu":{"name":"Brazzers Europe Antik","group":"Hardcore",
+                      "directUrl":"https://dash3.antik.sk/stream/hisi_brazzers_europe/playlist_cbcs.mpd",
+                      "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_dorcel":{"name":"Dorcel Antik","group":"Hardcore",
+                 "directUrl":"https://dash4.antik.sk/stream/hisi_dorcel/playlist_cbcs.mpd",
+                 "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_dorcel_xxx":{"name":"Dorcel Hardcore Antik","group":"Hardcore",
+                     "directUrl":"https://dash2.antik.sk/stream/hisi_dorcel_xxx/playlist_cbcs.mpd",
+                     "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_leo_tv":{"name":"Leo TV Antik","group":"Hardcore",
+                 "directUrl":"https://dash3.antik.sk/stream/hisi_leo_tv/playlist_cbcs.mpd",
+                 "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_extasy":{"name":"Extasy Antik","group":"Hardcore",
+                 "directUrl":"https://dash4.antik.sk/stream/hisi_extasy/playlist_cbcs.mpd",
+                 "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_leo_gold":{"name":"Leo Gold Antik","group":"Hardcore",
+                   "directUrl":"https://dash2.antik.sk/stream/hisi_leo_gold/playlist_cbcs.mpd",
+                   "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_passion":{"name":"Passion Antik","group":"Hardcore",
+                  "directUrl":"https://dash3.antik.sk/stream/hisi_passion_xxx/playlist_cbcs.mpd",
+                  "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_dusk":{"name":"Dusk Antik","group":"Hardcore",
+               "directUrl":"https://dash4.antik.sk/stream/hisi_dusk/playlist_cbcs.mpd",
+               "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_eroxxx":{"name":"EroXXX Antik","group":"Hardcore",
+                 "directUrl":"https://dash4.antik.sk/stream/hisi_eroxxx/playlist_cbcs.mpd",
+                 "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_erox":{"name":"EroX Antik","group":"Hardcore",
+               "directUrl":"https://dash3.antik.sk/stream/hisi_erox/playlist_cbcs.mpd",
+               "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    "hc_vixen":{"name":"Vixen Antik","group":"Hardcore",
+                "directUrl":"https://dash4.antik.sk/stream/hisi_vixen/playlist_cbcs.mpd",
+                "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"}},
+    # 18) Blu3 Hu5tler
+    "hc_blu3_hustler":{"name":"Blu3 Hu5tler","group":"Hardcore",
+                       "directUrl":"https://v4-pan-n79-cdn-01.live.cdn.cgates.lt/live/dash/560601/index.mpd",
+                       "clearKeys":{"54393232379c4a57898a8d4d12b6695c":"2305a3f727638465116400f7c422af87"}},
     # ---- Serie B ----
     "serieb/player_serieb.php?event=1":{"name":"Serie B 1","group":"Serie B"},
     "serieb/player_serieb.php?event=2":{"name":"Serie B 2","group":"Serie B"},
@@ -303,15 +340,23 @@ def parse_clear_keys(raw):
             return {"kid":str(k).lower(),"key":str(v).lower()}
     return None
 
-def build_clear_key_string(ck):
+def build_clear_keys(ck):
+    """
+    Converte una struttura di chiavi in una LISTA di stringhe "kid:key".
+    Supporta:
+      - None
+      - dict {kid: key, kid2: key2, ...}       -> tutte le coppie
+      - dict {"kid": "...", "key": "..."}      -> singola coppia
+      - stringa "kid:key"                      -> singola coppia
+    Restituisce None se non c'è nulla.
+    """
     if not ck: return None
     if isinstance(ck, dict):
         if 'kid' in ck and 'key' in ck:
-            return f"{str(ck['kid']).lower()}:{str(ck['key']).lower()}"
-        k, v = next(iter(ck.items()))
-        return f"{str(k).lower()}:{str(v).lower()}"
+            return [f"{str(ck['kid']).lower()}:{str(ck['key']).lower()}"]
+        return [f"{str(k).lower()}:{str(v).lower()}" for k, v in ck.items()]
     if isinstance(ck, str):
-        return ck.strip().lower()
+        return [ck.strip().lower()]
     return None
 
 # ============================================================
@@ -324,7 +369,7 @@ def fetch_channel(slug, meta):
         if not ck and meta.get('clearKeys'):
             ck = meta['clearKeys']
         return {"url": clean,
-                "clear_key": build_clear_key_string(ck),
+                "clear_key": build_clear_keys(ck),
                 "widevine": meta.get('widevineUrl'),
                 "headers": None}
 
@@ -359,7 +404,7 @@ def fetch_channel(slug, meta):
         if km:
             ck = parse_clear_keys(km.group(1))
 
-    return {"url": clean, "clear_key": build_clear_key_string(ck),
+    return {"url": clean, "clear_key": build_clear_keys(ck),
             "widevine": None, "headers": None}
 
 # ============================================================
@@ -418,7 +463,8 @@ def generate_m3u(channels):
                 out += f'#KODIPROP:inputstream.adaptive.license_key={ch["widevine"]}\n'
             elif ch['clear_key']:
                 out += "#KODIPROP:inputstream.adaptive.license_type=clearkey\n"
-                out += f'#KODIPROP:inputstream.adaptive.license_key={ch["clear_key"]}\n'
+                for k in ch['clear_key']:
+                    out += f'#KODIPROP:inputstream.adaptive.license_key={k}\n'
             out += f'{ch["url"]}\n'
     return out
 
