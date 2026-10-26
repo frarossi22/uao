@@ -201,67 +201,52 @@ CHANNEL_MAP = {
     "desire":{"name":"Desire","group":"Hardcore",
               "directUrl":"https://bpm.tv.delta.nl/dash-cenc/combined/10059/stb.mpd?bk-network=ftth-mobile",
               "clearKeys":{"da77348ad6d9c210977817f87112ea74":"2b2ba7d2ce06d7afb98c49449a5064d5"}},
-    # 3-17) 15 canali Antik con KID:KEY statica -> M3U Widevine
+    # 3-17) 15 canali Antik -> Widevine con license server URL
     "hc_babes":{"name":"Babes Antik","group":"Hardcore",
                 "directUrl":"https://dash2.antik.sk/stream/hisi_babes/playlist_cbcs.mpd",
-                "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-                "m3uWidevineStatic": True},
+                "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_desire":{"name":"Desire Antik","group":"Hardcore",
                  "directUrl":"https://dash3.antik.sk/stream/hisi_desire/playlist_cbcs.mpd",
-                 "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-                 "m3uWidevineStatic": True},
+                 "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_true_amateurs":{"name":"True Amateurs Antik","group":"Hardcore",
                         "directUrl":"https://dash4.antik.sk/stream/hisi_true_amateurs/playlist_cbcs.mpd",
-                        "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-                        "m3uWidevineStatic": True},
+                        "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_bang_u":{"name":"Bang U Antik","group":"Hardcore",
                  "directUrl":"https://dash2.antik.sk/stream/hisi_bang_u/playlist_cbcs.mpd",
-                 "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-                 "m3uWidevineStatic": True},
+                 "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_brazzers_eu":{"name":"Brazzers Europe Antik","group":"Hardcore",
                       "directUrl":"https://dash3.antik.sk/stream/hisi_brazzers_europe/playlist_cbcs.mpd",
-                      "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-                      "m3uWidevineStatic": True},
+                      "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_dorcel":{"name":"Dorcel Antik","group":"Hardcore",
                  "directUrl":"https://dash4.antik.sk/stream/hisi_dorcel/playlist_cbcs.mpd",
-                 "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-                 "m3uWidevineStatic": True},
+                 "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_dorcel_xxx":{"name":"Dorcel Hardcore Antik","group":"Hardcore",
                      "directUrl":"https://dash2.antik.sk/stream/hisi_dorcel_xxx/playlist_cbcs.mpd",
-                     "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-                     "m3uWidevineStatic": True},
+                     "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_leo_tv":{"name":"Leo TV Antik","group":"Hardcore",
                  "directUrl":"https://dash3.antik.sk/stream/hisi_leo_tv/playlist_cbcs.mpd",
-                 "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-                 "m3uWidevineStatic": True},
+                 "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_extasy":{"name":"Extasy Antik","group":"Hardcore",
                  "directUrl":"https://dash4.antik.sk/stream/hisi_extasy/playlist_cbcs.mpd",
-                 "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-                 "m3uWidevineStatic": True},
+                 "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_leo_gold":{"name":"Leo Gold Antik","group":"Hardcore",
                    "directUrl":"https://dash2.antik.sk/stream/hisi_leo_gold/playlist_cbcs.mpd",
-                   "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-                   "m3uWidevineStatic": True},
+                   "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_passion":{"name":"Passion Antik","group":"Hardcore",
                   "directUrl":"https://dash3.antik.sk/stream/hisi_passion_xxx/playlist_cbcs.mpd",
-                  "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-                  "m3uWidevineStatic": True},
+                  "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_dusk":{"name":"Dusk Antik","group":"Hardcore",
                "directUrl":"https://dash4.antik.sk/stream/hisi_dusk/playlist_cbcs.mpd",
-               "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-               "m3uWidevineStatic": True},
+               "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_eroxxx":{"name":"EroXXX Antik","group":"Hardcore",
                  "directUrl":"https://dash4.antik.sk/stream/hisi_eroxxx/playlist_cbcs.mpd",
-                 "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-                 "m3uWidevineStatic": True},
+                 "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_erox":{"name":"EroX Antik","group":"Hardcore",
                "directUrl":"https://dash3.antik.sk/stream/hisi_erox/playlist_cbcs.mpd",
-               "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-               "m3uWidevineStatic": True},
+               "widevineUrl":"https://drm.antik.sk/widevine/key"},
     "hc_vixen":{"name":"Vixen Antik","group":"Hardcore",
                 "directUrl":"https://dash4.antik.sk/stream/hisi_vixen/playlist_cbcs.mpd",
-                "clearKeys":{"11223344556677889900112233445566":"4b80724d0ef86bcb2c21f7999d67739d"},
-                "m3uWidevineStatic": True},
+                "widevineUrl":"https://drm.antik.sk/widevine/key"},
     # 18) Blu3 Hu5tler
     "hc_blu3_hustler":{"name":"Blu3 Hu5tler","group":"Hardcore",
                        "directUrl":"https://v4-pan-n79-cdn-01.live.cdn.cgates.lt/live/dash/560601/index.mpd",
@@ -356,7 +341,6 @@ def parse_clear_keys(raw):
     return None
 
 def build_clear_keys(ck):
-    """Restituisce una lista di stringhe 'kid:key'."""
     if not ck: return None
     if isinstance(ck, dict):
         if 'kid' in ck and 'key' in ck:
@@ -378,7 +362,6 @@ def fetch_channel(slug, meta):
         return {"url": clean,
                 "clear_key": build_clear_keys(ck),
                 "widevine": meta.get('widevineUrl'),
-                "m3uWidevineStatic": bool(meta.get('m3uWidevineStatic')),
                 "headers": None}
 
     if any(x in slug for x in ('player_event.php','player.php','player_serieb.php')):
@@ -413,7 +396,7 @@ def fetch_channel(slug, meta):
             ck = parse_clear_keys(km.group(1))
 
     return {"url": clean, "clear_key": build_clear_keys(ck),
-            "widevine": None, "m3uWidevineStatic": False, "headers": None}
+            "widevine": None, "headers": None}
 
 # ============================================================
 # SCRAPING
@@ -432,8 +415,7 @@ def scrape_all():
         log(f"[{i}/{total}] 📡 {name}{suffix}...", C.WHITE)
 
         entry = {"name":name,"group":group,"tvgId":name,"url":None,
-                 "clear_key":None,"widevine":None,
-                 "m3uWidevineStatic":False,"headers":None}
+                 "clear_key":None,"widevine":None,"headers":None}
         try:
             res = fetch_channel(slug, meta)
             if res is None:
@@ -446,7 +428,6 @@ def scrape_all():
                 entry['url'] = res['url']
                 entry['clear_key'] = res.get('clear_key')
                 entry['widevine'] = res.get('widevine')
-                entry['m3uWidevineStatic'] = res.get('m3uWidevineStatic', False)
                 entry['headers'] = res.get('headers')
                 log("  ✅ OK", C.GREEN)
             else:
@@ -472,8 +453,7 @@ def generate_m3u(channels):
                 out += "#KODIPROP:inputstream.adaptive.license_type=com.widevine.alpha\n"
                 out += f'#KODIPROP:inputstream.adaptive.license_key={ch["widevine"]}\n'
             elif ch['clear_key']:
-                lic_type = 'com.widevine.alpha' if ch.get('m3uWidevineStatic') else 'clearkey'
-                out += f"#KODIPROP:inputstream.adaptive.license_type={lic_type}\n"
+                out += "#KODIPROP:inputstream.adaptive.license_type=clearkey\n"
                 for k in ch['clear_key']:
                     out += f'#KODIPROP:inputstream.adaptive.license_key={k}\n'
             out += f'{ch["url"]}\n'
