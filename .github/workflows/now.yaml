@@ -1,0 +1,31 @@
+name: Esegui NOW e salva output
+
+on:
+  schedule:
+    # Esegue ogni giorno alle 04:00 ora italiana (02:00 UTC in estate, 03:00 UTC in inverno)
+    # Per ora usiamo 02:00 UTC; se in inverno vuoi le 04:00 esatte, cambieremo in 03:00 UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:   # Permette di avviarlo manualmente per test
+
+jobs:
+  run-now:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del codice
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Installa le dipendenze
+        run: |
+          python -m pip install --upgrade pip
+          pip install pywidevine curl_cffi cryptography construct pymp4
+
+      - name: Esegui lo script NOW
+        run: |
+          cd uaonow/now
+          python now.py --all
