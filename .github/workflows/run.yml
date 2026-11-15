@@ -24,4 +24,4 @@ jobs:
 
       - name: Run Python automation script
         run: |
-          python3 "uaznao_114_fix.py"
+          python3 "uaznao_124fix_auto.py"
